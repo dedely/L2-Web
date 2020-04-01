@@ -1,13 +1,14 @@
 <?php
-    $title = "Result";
+    $title = "Weather";
     include "include/header.inc.php";
 ?>
 
-        <h1>Region</h1>
+        <h1>Weather</h1>
         <section>
             <h2>Results</h2>
             <?php
-                displayDptForm();
+                displayCityForm();
+                processCityForm();
             ?>
         </section>
 

@@ -22,7 +22,7 @@ function displayDptForm()
         $departments = getDepartments($regionCode);
 
 
-        echo "<form method=\"GET\" action=\"dpt.php\">\n";
+        echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
         echo "\t\t<legend>dpt dropdown</legend>\n";
         echo "\t\t<select name=\"dpt\" id=\"dpt\">\n";
@@ -32,8 +32,8 @@ function displayDptForm()
             displayOption($departments[$i]);
         }
 
-        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t\t</select>\n";
+        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
     }
@@ -69,7 +69,64 @@ function getDepartments($regionCode = "11")
             $departments[] = $dpt;
         }
     }
+    fclose($handle);
     return $departments;
+}
+
+/**
+ * This function displays a dropdown form of the cities in a given department.
+ *
+ * @return void
+ */
+function displayCityForm(){
+    if(isset($_GET["dpt"])){
+
+        $dptCode = $_GET["dpt"];
+        if (DEBUG) {
+            echo "<p>regionCode: " . $dptCode . "</p>\n";
+        }
+        $cities = getCities($dptCode);
+
+
+        echo "<form method=\"GET\" action=\"weather.php\">\n";
+        echo "\t<fieldset>\n";
+        echo "\t\t<legend>City dropdown</legend>\n";
+        echo "\t\t<select name=\"city\" id=\"city\">\n";
+        echo "\t\t\t<option value=\"none\" selected disabled hidden>Select a city</option>\n";
+
+        for ($i = 0; $i < count($cities); $i++) {
+            displayOption($cities[$i]);
+        }
+
+        echo "\t\t</select>\n";
+        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        echo "\t</fieldset>\n";
+        echo "</form>\n";
+    }
+}
+
+/**
+ * A simple utility method which uses a csv file to return the appropriate informations.
+ *
+ * @param string $dptCode
+ * @return array $cities
+ */
+function getCities($dptCode)
+{
+    $citiesData = "./resources/cities.csv";
+    $handle = fopen($citiesData, "r");
+    //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
+    fgets($handle);
+    $cities = array();
+    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE)) {
+        if ($data[1] == $dptCode) {
+            $city["code"] = $data[3];
+            $city["name"] = $data[4];
+            $cities[] = $city;
+        }
+    }
+    fclose($handle);
+    return $cities;
 }
 
 /**
@@ -77,8 +134,8 @@ function getDepartments($regionCode = "11")
  *
  * @return void
  */
-function processDptForm(){
-    if (isset($_GET["dpt"])){
-        echo "<p>dptCode: " . $_GET["dpt"] . "</p>\n";
+function processCityForm(){
+    if (isset($_GET["city"])){
+        echo "<p>City Zip: " . $_GET["city"] . "</p>\n";
     }
 }
