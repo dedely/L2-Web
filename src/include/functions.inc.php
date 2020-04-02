@@ -3,7 +3,7 @@
 /**
  * Set to true/false to see/hide debug elements.
  */
-define("DEBUG", false);
+define("DEBUG", true);
 
 /*The following functions display the appropriate departments and cities forms using the naive approach of running through the entire csv files. */
 
@@ -136,6 +136,21 @@ function getCities($dptCode)
  */
 function processCityForm(){
     if (isset($_GET["city"])){
-        echo "<p>City Zip: " . $_GET["city"] . "</p>\n";
+       queryWeatherAPI($_GET["city"]);
     }
+}
+
+/**
+ * This function sends a query to the openweathermap api using the provided zip code to get weather data as a json string.
+ *
+ * @param string $zip
+ * @return void
+ */
+function queryWeatherAPI($zip){
+    $url = "http://api.openweathermap.org/data/2.5/weather?zip=".$zip.",FR&appid=1f3d52717caedbf49c7f39dc59562336";
+    $json = file_get_contents($url);
+    if(DEBUG){
+        echo "<p>".$json."</p>\n";
+    }
+    return $json;
 }
