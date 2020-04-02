@@ -6,7 +6,7 @@ Kevin Bernard, Adel Abbas.
 
 ## Hosted on: 
 
-[adelabbas.tech](https://www.adelabbas.tech/projet/)
+[adelabbas.tech](http://adelabbas.tech/projet/)
 
 ## Physical structure: 
 
