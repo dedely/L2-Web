@@ -118,7 +118,7 @@ function getCities($dptCode)
     //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
     fgets($handle);
     $cities = array();
-    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE)) {
+    while ((($data = fgetcsv($handle, ",")) !== FALSE)) {
         if ($data[1] == $dptCode) {
             $city["code"] = $data[3];
             $city["name"] = $data[4];
