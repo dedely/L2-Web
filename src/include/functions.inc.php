@@ -3,7 +3,7 @@
 /**
  * Set to true/false to see/hide debug elements.
  */
-define("DEBUG", true);
+define("DEBUG", false);
 
 /*The following functions display the appropriate departments and cities forms using the naive approach of running through the entire csv files.*/
 
@@ -136,7 +136,8 @@ function getCities($dptCode)
  */
 function processCityForm(){
     if (isset($_GET["city"])){
-       queryWeatherAPI($_GET["city"]);
+        $weatherData = queryWeatherAPI($_GET["city"]);
+        displayWeather($weatherData);
     }
 }
 
@@ -175,11 +176,16 @@ function displayWeather($weatherData){
 
 
 function displayCurrentWeatherData($weatherData){
-
+    echo "<h2>".$weatherData["name"]."</h2>\n";
+    $weather = $weatherData["weather"][0];
+    echo "\t\t\t<figure>\n";
+    echo "\t\t\t\t<img src=\"http://openweathermap.org/img/wn/".$weather["icon"].".png \" alt=\"weather illustration\"/>\n";
+    echo "\t\t\t</figure>\n";
+    echo "\t\t\t<p>".$weather["description"].", feels like: ".getTemp($weatherData["main"])."°C.</p>\n";
 }
 
-function displayCity(){
-    if (isset($_GET["city"])){
-        
-    }
+function getTemp($temp){
+    $feelslike = $temp["feels_like"];
+    $feelslike -= 273.15;
+    return $feelslike;
 }

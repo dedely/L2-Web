@@ -3,9 +3,8 @@
     include "include/header.inc.php";
 ?>
 
-        <h1>Weather</h1>
+        <h1>Weather forecast</h1>
         <section>
-            <h2>Results</h2>
             <?php
                 displayCityForm();
                 processCityForm();
