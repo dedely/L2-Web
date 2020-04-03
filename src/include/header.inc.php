@@ -11,7 +11,7 @@
         <meta name="keywords" content="Weather forecast, Region, City, CY, <?php echo $title ?>" />
         <meta name="description" content="" />
         <meta charset="utf-8" />
-        <link rel="stylesheet" href="standard.css" />
+        <link rel="stylesheet" href="./standard.css" />
     </head>
 
     <body>
