@@ -3,9 +3,9 @@
 /**
  * Set to true/false to see/hide debug elements.
  */
-define("DEBUG", true);
+define("DEBUG", false);
 
-/*The following functions display the appropriate departments and cities forms using the naive approach of running through the entire csv files. */
+/*The following functions display the appropriate departments and cities forms using the naive approach of running through the entire csv files.*/
 
 /**
  * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
@@ -136,15 +136,17 @@ function getCities($dptCode)
  */
 function processCityForm(){
     if (isset($_GET["city"])){
-       queryWeatherAPI($_GET["city"]);
+        $weatherData = queryWeatherAPI($_GET["city"]);
+        displayWeather($weatherData);
     }
 }
 
 /**
  * This function sends a query to the openweathermap api using the provided zip code to get weather data as a json string.
+ * NOTE: Atm, we don't take into consideration the possibility of a query failing. We'll add additionnal logic later.
  *
- * @param string $zip
- * @return void
+ * @param string $zip A city zip code.
+ * @return array $weatherData An associative array with weather data.
  */
 function queryWeatherAPI($zip){
     $url = "http://api.openweathermap.org/data/2.5/weather?zip=".$zip.",FR&appid=1f3d52717caedbf49c7f39dc59562336";
@@ -152,5 +154,38 @@ function queryWeatherAPI($zip){
     if(DEBUG){
         echo "<p>".$json."</p>\n";
     }
-    return $json;
+    $weatherData = json_decode($json, true);
+    return $weatherData;
+}
+
+
+function displayWeather($weatherData){
+    $option = "now";
+    if(isset($_GET["option"])){
+        $option = $_GET["option"];
+    }
+    switch ($option) {
+        case "now":
+            displayCurrentWeatherData($weatherData);
+            break;
+        default:
+            echo "<p>Unknown option!</p>\n";
+            break;
+    }
+}
+
+
+function displayCurrentWeatherData($weatherData){
+    echo "<h2>".$weatherData["name"]."</h2>\n";
+    $weather = $weatherData["weather"][0];
+    echo "\t\t\t<figure>\n";
+    echo "\t\t\t\t<img src=\"http://openweathermap.org/img/wn/".$weather["icon"].".png \" alt=\"weather illustration\"/>\n";
+    echo "\t\t\t</figure>\n";
+    echo "\t\t\t<p>".$weather["description"].", feels like: ".getTemp($weatherData["main"])."°C.</p>\n";
+}
+
+function getTemp($temp){
+    $feelslike = $temp["feels_like"];
+    $feelslike -= 273.15;
+    return $feelslike;
 }
