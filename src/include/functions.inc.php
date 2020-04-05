@@ -70,15 +70,12 @@ function getDepartments($regionCode = "11")
         }
         if ($state == 1) {
             if ($data[0] != $regionCode) {
-                $state = 2;
+               $stop = true;
             } else {
                 $dpt["code"] = $data[1];
                 $dpt["name"] = $data[2];
                 $departments[] = $dpt;
             }
-        }
-        if ($state == 2) {
-            $stop = true;
         }
     }
     fclose($handle);
@@ -139,15 +136,12 @@ function getCities($dptCode)
         }
         if ($state == 1) {
             if ($data[0] != $dptCode) {
-                $state = 2;
+                $stop = true;
             } else {
                 $city["code"] = $data[2];
                 $city["name"] = $data[3];
                 $cities[] = $city;
             }
-        }
-        if ($state == 2) {
-            $stop = true;
         }
     }
     fclose($handle);
