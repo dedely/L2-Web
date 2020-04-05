@@ -62,11 +62,23 @@ function getDepartments($regionCode = "11")
     //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
     fgets($handle);
     $departments = array();
-    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE)) {
-        if ($data[0] == $regionCode) {
-            $dpt["code"] = $data[1];
-            $dpt["name"] = $data[2];
-            $departments[] = $dpt;
+    $stop = false;
+    $state = 0;
+    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE) && !$stop) {
+        if (($state == 0) && ($data[0] == $regionCode)) {
+            $state = 1;
+        }
+        if ($state == 1) {
+            if ($data[0] != $regionCode) {
+                $state = 2;
+            } else {
+                $dpt["code"] = $data[1];
+                $dpt["name"] = $data[2];
+                $departments[] = $dpt;
+            }
+        }
+        if ($state == 2) {
+            $stop = true;
         }
     }
     fclose($handle);
@@ -78,8 +90,9 @@ function getDepartments($regionCode = "11")
  *
  * @return void
  */
-function displayCityForm(){
-    if(isset($_GET["dpt"])){
+function displayCityForm()
+{
+    if (isset($_GET["dpt"])) {
 
         $dptCode = $_GET["dpt"];
         if (DEBUG) {
@@ -118,11 +131,23 @@ function getCities($dptCode)
     //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
     fgets($handle);
     $cities = array();
-    while ((($data = fgetcsv($handle, ",")) !== FALSE)) {
-        if ($data[0] == $dptCode) {
-            $city["code"] = $data[2];
-            $city["name"] = $data[3];
-            $cities[] = $city;
+    $stop = false;
+    $state = 0;
+    while ((($data = fgetcsv($handle, ",")) !== FALSE)&& !$stop) {
+        if (($state == 0) && ($data[0] == $dptCode)) {
+            $state = 1;
+        }
+        if ($state == 1) {
+            if ($data[0] != $dptCode) {
+                $state = 2;
+            } else {
+                $city["code"] = $data[2];
+                $city["name"] = $data[3];
+                $cities[] = $city;
+            }
+        }
+        if ($state == 2) {
+            $stop = true;
         }
     }
     fclose($handle);
@@ -134,8 +159,9 @@ function getCities($dptCode)
  *
  * @return void
  */
-function processCityForm(){
-    if (isset($_GET["city"])){
+function processCityForm()
+{
+    if (isset($_GET["city"])) {
         $weatherData = queryWeatherAPI($_GET["city"]);
         displayWeather($weatherData);
     }
@@ -148,20 +174,22 @@ function processCityForm(){
  * @param string $zip A city zip code.
  * @return array $weatherData An associative array with weather data.
  */
-function queryWeatherAPI($zip){
-    $url = "http://api.openweathermap.org/data/2.5/weather?zip=".$zip.",FR&appid=1f3d52717caedbf49c7f39dc59562336";
+function queryWeatherAPI($zip)
+{
+    $url = "http://api.openweathermap.org/data/2.5/weather?zip=" . $zip . ",FR&appid=1f3d52717caedbf49c7f39dc59562336";
     $json = file_get_contents($url);
-    if(DEBUG){
-        echo "<p>".$json."</p>\n";
+    if (DEBUG) {
+        echo "<p>" . $json . "</p>\n";
     }
     $weatherData = json_decode($json, true);
     return $weatherData;
 }
 
 
-function displayWeather($weatherData){
+function displayWeather($weatherData)
+{
     $option = "now";
-    if(isset($_GET["option"])){
+    if (isset($_GET["option"])) {
         $option = $_GET["option"];
     }
     switch ($option) {
@@ -175,16 +203,18 @@ function displayWeather($weatherData){
 }
 
 
-function displayCurrentWeatherData($weatherData){
-    echo "<h2>".$weatherData["name"]."</h2>\n";
+function displayCurrentWeatherData($weatherData)
+{
+    echo "<h2>" . $weatherData["name"] . "</h2>\n";
     $weather = $weatherData["weather"][0];
     echo "\t\t\t<figure>\n";
-    echo "\t\t\t\t<img src=\"http://openweathermap.org/img/wn/".$weather["icon"].".png \" alt=\"weather illustration\"/>\n";
+    echo "\t\t\t\t<img src=\"http://openweathermap.org/img/wn/" . $weather["icon"] . ".png \" alt=\"weather illustration\"/>\n";
     echo "\t\t\t</figure>\n";
-    echo "\t\t\t<p>".$weather["description"].", feels like: ".getTemp($weatherData["main"])."°C.</p>\n";
+    echo "\t\t\t<p>" . $weather["description"] . ", feels like: " . getTemp($weatherData["main"]) . "°C.</p>\n";
 }
 
-function getTemp($temp){
+function getTemp($temp)
+{
     $feelslike = $temp["feels_like"];
     $feelslike -= 273.15;
     return $feelslike;
