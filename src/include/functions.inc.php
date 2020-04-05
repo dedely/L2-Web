@@ -63,9 +63,9 @@ function getDepartments($regionCode = "11")
     fgets($handle);
     $departments = array();
     while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE)) {
-        if ($data[1] == $regionCode) {
-            $dpt["code"] = $data[2];
-            $dpt["name"] = $data[3];
+        if ($data[0] == $regionCode) {
+            $dpt["code"] = $data[1];
+            $dpt["name"] = $data[2];
             $departments[] = $dpt;
         }
     }
@@ -119,9 +119,9 @@ function getCities($dptCode)
     fgets($handle);
     $cities = array();
     while ((($data = fgetcsv($handle, ",")) !== FALSE)) {
-        if ($data[1] == $dptCode) {
-            $city["code"] = $data[3];
-            $city["name"] = $data[4];
+        if ($data[0] == $dptCode) {
+            $city["code"] = $data[2];
+            $city["name"] = $data[3];
             $cities[] = $city;
         }
     }
