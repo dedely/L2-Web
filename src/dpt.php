@@ -1,11 +1,10 @@
 <?php
-    $title = "Result";
+    $title = "Dpt form";
     include "include/header.inc.php";
 ?>
 
-        <h1>Region</h1>
         <section>
-            <h2>Results</h2>
+            <h2><?php echo getRegionName() ?></h2>
             <?php
                 displayDptForm();
             ?>

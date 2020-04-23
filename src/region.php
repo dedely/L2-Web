@@ -3,13 +3,12 @@
     include "include/header.inc.php";
 ?>
 
-        <h1>Region</h1>
         <section>
-            <h2>Region form</h2>
+            <h2>Choix la région</h2>
             <form method="GET" action="dpt.php">
                 <fieldset>
-                    <legend> simple form </legend>
-                    <label for="regionCodeField">Type a region code</label>
+                    <legend> formulaire simple</legend>
+                    <label for="regionCodeField">Saisissez un code de région</label>
                     <input type="text" name="regionCode" id="regionCodeField" size="10" />
                     <input type="submit" value="Go!"/>
                 </fieldset>

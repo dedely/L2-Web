@@ -1,14 +1,13 @@
 <?php
-    $title = "Weather";
-    include "include/header.inc.php";
+$title = "Weather";
+session_start();
+include "include/header.inc.php";
 ?>
 
-        <h1>Weather forecast</h1>
-        <section>
-            <?php
-                displayCityForm();
-                processCityForm();
-            ?>
-        </section>
+<?php
+displayCity();
+displayCityForm();
+?>
+
 
 <?php require_once "include/footer.inc.php"; ?>

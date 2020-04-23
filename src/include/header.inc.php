@@ -19,7 +19,7 @@
            <div class="container">
                 <img src="./images/clouds2.jpg" alt="Clouds"/>
                 <div class="centered">
-                    <h1>Prévisions Météorologiques</h1>
+                    <h1>Météo</h1>
                 </div>
             </div>
             <nav>
