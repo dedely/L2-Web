@@ -166,6 +166,7 @@ function getCities($dptCode)
     $cities = array();
     $stop = false;
     $state = 0;
+    $tmp = "";
     while ((($data = fgetcsv($handle, ",")) !== FALSE) && !$stop) {
         if (($state == 0) && ($data[$DPT_CODE] == $dptCode)) {
             $state = 1;
@@ -178,8 +179,11 @@ function getCities($dptCode)
                 $city["name"] = $data[$CITY_NAME];
                 $city["lat"] = $data[$GPS_LAT];
                 $city["long"] = $data[$GPS_LNG];
-                //Add the city element to the $cities array.
-                $cities[] = $city;
+                //Add the city element to the $cities array and avoid duplicate names. 
+                if($city["name"] != $tmp){
+                    $tmp = $city["name"];
+                    $cities[] = $city;
+                }
             }
         }
     }
