@@ -29,4 +29,5 @@
                 </ul>
             </nav>
         </header>
+        <?php count_hits() ?>
         

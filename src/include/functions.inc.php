@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Set to true/false to see/hide debug elements.
  */
@@ -22,49 +21,10 @@ define("HOURLY", "hourly");
 define("DAILY", "daily");
 
 date_default_timezone_set('Europe/Paris');
-/*The following functions display the appropriate departments and cities forms using a sequential search algorithm through csv files.*/
 
-/**
- * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
- * 
- * @return void
- */
-function displayDptForm(): void
-{
-    if (isset($_GET["region"])) {
-        $regionCode = $_GET["region"];
-        if (DEBUG) {
-            echo "<p>regionCode: " . $regionCode . "</p>\n";
-        }
-        $departments = getDepartments($regionCode);
+define("HITS_FILE", "./stats/hits.txt");
 
-
-        echo "<form method=\"GET\" action=\"weather.php\">\n";
-        echo "\t<fieldset>\n";
-        echo "\t\t<legend>dpt dropdown</legend>\n";
-        echo "\t\t<select name=\"dpt\" id=\"dpt\">\n";
-        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionner un département</option>\n";
-
-        for ($i = 0; $i < count($departments); $i++) {
-            displayOption($departments[$i]);
-        }
-
-        echo "\t\t</select>\n";
-        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
-        echo "\t</fieldset>\n";
-        echo "</form>\n";
-    }
-}
-
-/**
- *We're going to display options for the dpt and the cities forms, so might as well make it a function ;)
- * @param array $arr
- * @return void
- */
-function displayOption(array $arr): void
-{
-    echo "\t\t\t<option value=\"" . $arr["code"] . "\">" . $arr["name"] . "</option>\n";
-}
+/***********CSV QUERIES******/
 
 /**
  * A simple utility method which uses a csv file to return the appropriate informations.
@@ -105,41 +65,6 @@ function getDepartments(string $regionCode = "11"): array
     }
     fclose($handle);
     return $departments;
-}
-
-/**
- * This function displays a dropdown form of the cities in a given department.
- *
- * @return void
- */
-function displayCityForm(): void
-{
-    if (isset($_GET["dpt"])) {
-
-        $dptCode = $_GET["dpt"];
-        if (DEBUG) {
-            echo "<p>regionCode: " . $dptCode . "</p>\n";
-        }
-        $cities = getCities($dptCode);
-
-
-        echo "<form method=\"GET\" action=\"weather.php\">\n";
-        echo "\t<fieldset>\n";
-        echo "\t\t<legend>City dropdown</legend>\n";
-        echo "\t\t<select name=\"city\" id=\"city\">\n";
-        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
-
-        for ($i = 0; $i < count($cities); $i++) {
-            $city = $cities[$i];
-            $encodedValue  = http_build_query($city, "", SEPARATOR);
-            echo "\t\t\t<option value=\"" . $encodedValue . "\">" . $city["name"] . "</option>\n";
-        }
-
-        echo "\t\t</select>\n";
-        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
-        echo "\t</fieldset>\n";
-        echo "</form>\n";
-    }
 }
 
 /**
@@ -192,13 +117,122 @@ function getCities(string $dptCode): array
 }
 
 /**
+ * This utility function uses a sequential search to find the name assiociated with a regionCode in a csv file.
+ *
+ * @return string the region name
+ */
+function getRegionName(): string
+{
+    if (isset($_GET["region"])) {
+        $regionData = "./resources/regions.csv";
+        $regionCode = $_GET["region"];
+        $handle = fopen($regionData, "r");
+
+        //Change the following variables if changes are made in the csv file.
+        $REGION_CODE = 0;
+        $REGION_NAME = 1;
+
+        //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
+        fgets($handle);
+        $stop = false;
+        $name = null;
+        while ((($data = fgetcsv($handle, ",")) !== FALSE) && !$stop) {
+            if ($data[$REGION_CODE] == $regionCode) {
+                $name = $data[$REGION_NAME];
+                $stop = true;
+            }
+        }
+        fclose($handle);
+        return $name;
+    }
+}
+
+/*******DROPDOWN FORMS********/
+/**
+ * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
+ * 
+ * @return void
+ */
+function displayDptForm(): void
+{
+    if (isset($_GET["region"])) {
+        $regionCode = $_GET["region"];
+        if (DEBUG) {
+            echo "<p>regionCode: " . $regionCode . "</p>\n";
+        }
+        $departments = getDepartments($regionCode);
+
+
+        echo "<form method=\"GET\" action=\"weather.php\">\n";
+        echo "\t<fieldset>\n";
+        echo "\t\t<legend>dpt dropdown</legend>\n";
+        echo "\t\t<select name=\"dpt\" id=\"dpt\">\n";
+        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionner un département</option>\n";
+
+        for ($i = 0; $i < count($departments); $i++) {
+            displayOption($departments[$i]);
+        }
+
+        echo "\t\t</select>\n";
+        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        echo "\t</fieldset>\n";
+        echo "</form>\n";
+    }
+}
+
+/**
+ *We're going to display options for the dpt and the cities forms, so might as well make it a function ;)
+ * @param array $arr
+ * @return void
+ */
+function displayOption(array $arr): void
+{
+    echo "\t\t\t<option value=\"" . $arr["code"] . "\">" . $arr["name"] . "</option>\n";
+}
+
+/**
+ * This function displays a dropdown form of the cities in a given department.
+ *
+ * @return void
+ */
+function displayCityForm(): void
+{
+    if (isset($_GET["dpt"])) {
+
+        $dptCode = $_GET["dpt"];
+        if (DEBUG) {
+            echo "<p>regionCode: " . $dptCode . "</p>\n";
+        }
+        $cities = getCities($dptCode);
+
+
+        echo "<form method=\"GET\" action=\"weather.php\">\n";
+        echo "\t<fieldset>\n";
+        echo "\t\t<legend>City dropdown</legend>\n";
+        echo "\t\t<select name=\"city\" id=\"city\">\n";
+        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
+
+        for ($i = 0; $i < count($cities); $i++) {
+            $city = $cities[$i];
+            $encodedValue  = http_build_query($city, "", SEPARATOR);
+            echo "\t\t\t<option value=\"" . $encodedValue . "\">" . $city["name"] . "</option>\n";
+        }
+
+        echo "\t\t</select>\n";
+        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        echo "\t</fieldset>\n";
+        echo "</form>\n";
+    }
+}
+
+/*********API QUERY******/
+/**
  * test function
  *
  * @return void
  */
 function processCityForm(): void
 {
-    //empty($_GET["dpt"]) && 
     if (empty($_GET["dpt"]) && isset($_GET["city"])) {
         $encodedValue = $_GET["city"];
         parse_str($encodedValue, $city);
@@ -214,26 +248,7 @@ function processCityForm(): void
         displayWeather();
     }
 }
-/**
- * This function displays a simple form with 2 radio buttons.
- *
- * @return void
- */
-function displayOptions(): void
-{
-    if (isset($_SESSION["weather"])) {
-        echo "<form method=\"GET\" action=\"weather.php\">\n";
-        echo "\t<fieldset>\n";
-        echo "\t\t<legend>Options</legend>\n";
-        echo "\t\t<label for=\"hourly\">Par heure</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\"/>\n";
-        echo "\t\t<label for=\"daily\">Par jour</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\"/>\n";
-        echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
-        echo "\t</fieldset>\n";
-        echo "</form>\n";
-    }
-}
+
 /**
  * This function sends a query to the openweathermap api using the provided zip code to get weather data as a json string.
  * NOTE: Atm, we don't take into consideration the possibility of a query failing. We'll add additionnal logic later.
@@ -271,6 +286,29 @@ function queryWeatherAPIGPS(string $lat, string $long): array
     $weatherData = json_decode($json, true);
     return $weatherData;
 }
+
+/*********RESULTS*****/
+
+/**
+ * This function displays a simple form with 2 radio buttons.
+ *
+ * @return void
+ */
+function displayOptions(): void
+{
+    if (isset($_SESSION["weather"])) {
+        echo "<form method=\"GET\" action=\"weather.php\">\n";
+        echo "\t<fieldset>\n";
+        echo "\t\t<legend>Options</legend>\n";
+        echo "\t\t<label for=\"hourly\">Par heure</label>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\"/>\n";
+        echo "\t\t<label for=\"daily\">Par jour</label>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\"/>\n";
+        echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        echo "\t</fieldset>\n";
+        echo "</form>\n";
+    }
+}
 /**
  *
  * @param string $option
@@ -296,6 +334,48 @@ function displayWeather(string $option = HOURLY): void
         }
     }
 }
+/**
+ * 
+ *
+ * @return void
+ */
+function displayCity(): void
+{
+    require_once("include/city.inc.php");
+}
+/**
+ * This functions returns the name of the city selected by the user (or a default name "Prévisions par ville");
+ *
+ * @return string
+ */
+function getCityName(): string
+{
+    $name = null;
+    if (empty($_GET["dpt"]) && isset($_SESSION["city"])) {
+        $name = $_SESSION["city"]["name"];
+    }
+    if (empty($_GET["dpt"]) && isset($_GET["city"])) {
+        parse_str($_GET["city"], $city);
+        $name = $city["name"];
+    }
+    if ($name == null) {
+        $name = "Prévisions par ville";
+    }
+    return $name;
+}
+
+/******************FORECAST DISPLAY***************/
+
+/**
+ *
+ * @param string $icon the icon id. A list of the valid ids can be found on https://openweathermap.org/weather-conditions
+ * @return string 
+ */
+function displayWeatherIllustration(string $icon): string
+{
+    return "<img src=\"http://openweathermap.org/img/wn/" . $icon . ".png \" alt=\"weather illustration\"/>\n";
+}
+
 /**
  * This function displays an Hourly forecast for 48 hours
  *
@@ -344,87 +424,6 @@ function displayHourlyForecast(array $forecast): void
     echo "\t</tr>\n";
 }
 /**
- * This utility function returns the hour corresponding provided unix time code
- *
- * @param string $dt a unix time code
- * @return string the corresponding hour
- */
-function convertTime(string $dt): string
-{
-    return date("H \h i", $dt);
-}
-/**
- *
- * @param string $icon the icon id. A list of the valid ids can be found on https://openweathermap.org/weather-conditions
- * @return string 
- */
-function displayWeatherIllustration(string $icon): string
-{
-    return "<img src=\"http://openweathermap.org/img/wn/" . $icon . ".png \" alt=\"weather illustration\"/>\n";
-}
-/**
- * This utility function uses a sequential search to find the name assiociated with a regionCode in a csv file.
- *
- * @return string the region name
- */
-function getRegionName(): string
-{
-    if (isset($_GET["region"])) {
-        $regionData = "./resources/regions.csv";
-        $regionCode = $_GET["region"];
-        $handle = fopen($regionData, "r");
-
-        //Change the following variables if changes are made in the csv file.
-        $REGION_CODE = 0;
-        $REGION_NAME = 1;
-
-        //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
-        fgets($handle);
-        $stop = false;
-        $name = null;
-        while ((($data = fgetcsv($handle, ",")) !== FALSE) && !$stop) {
-            if ($data[$REGION_CODE] == $regionCode) {
-                $name = $data[$REGION_NAME];
-                $stop = true;
-            }
-        }
-        fclose($handle);
-        return $name;
-    }
-}
-
-/**
- * 
- *
- * @return void
- */
-function displayCity(): void
-{
-    require_once("include/city.inc.php");
-}
-
-/**
- * This functions returns the name of the city selected by the user (or a default name "Prévisions par ville");
- *
- * @return string
- */
-function getCityName(): string
-{
-    $name = null;
-    if (empty($_GET["dpt"]) && isset($_SESSION["city"])) {
-        $name = $_SESSION["city"]["name"];
-    }
-    if (empty($_GET["dpt"]) && isset($_GET["city"])) {
-        parse_str($_GET["city"], $city);
-        $name = $city["name"];
-    }
-    if ($name == null) {
-        $name = "Prévisions par ville";
-    }
-    return $name;
-}
-
-/**
  * This function displays the weather forecast of the next 7 days.
  *
  * @return void
@@ -471,6 +470,19 @@ function displayDailyForecast(array $forecast): void
     echo "\t</tr>\n";
 }
 
+/************************TIME*******************/
+
+/**
+ * This utility function returns the hour corresponding provided unix time code
+ *
+ * @param string $dt a unix time code
+ * @return string the corresponding hour
+ */
+function convertTime(string $dt): string
+{
+    return date("H \h i", $dt);
+}
+
 /**
  * This utility function returns the day in French corresponding to the provided unix time code.
  *
@@ -483,4 +495,42 @@ function getDay(string $dt): string
     $date = getdate($dt);
     $wday = $date["wday"];
     return $frDays[$wday];
+}
+
+/***************************STATS*****************************/
+
+/**
+ *  A simple hit counter using a text file
+ * @return integer the new hit count
+ */
+function count_hits(): int
+{
+    //We first open the stream for reading and writing with the mode parameter set to "r+".
+    $file = fopen(HITS_FILE, "r+");
+    //Then we read the file content. In this case we can afford to load the entire file.
+    $hits = intval(fread($file, filesize(HITS_FILE)));
+    //Update the counter value;
+    $hits++;
+    //Then we set the file position indicator back to 0, in order to overwrite its content.
+    rewind($file);
+    fwrite($file, strval($hits));
+    fclose($file);
+    return $hits;
+}
+
+/******************************COOKIES***********************************/
+
+/**
+ * This function saves the last consulted city on the user's browser via a cookie.
+ *
+ * @return void
+ */
+function city_cookie(): void
+{
+    $city = $_GET["city"];
+    if (isset($city)) {
+        //Stores the cookie for a month;
+        $time = time() + 60 * 60 * 24 * 30;
+        setcookie("city", $city,  $time, "weather/");
+    }
 }
