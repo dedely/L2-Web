@@ -29,7 +29,7 @@ date_default_timezone_set('Europe/Paris');
  * 
  * @return void
  */
-function displayDptForm()
+function displayDptForm(): void
 {
     if (isset($_GET["region"])) {
         $regionCode = $_GET["region"];
@@ -61,7 +61,7 @@ function displayDptForm()
  * @param array $arr
  * @return void
  */
-function displayOption($arr)
+function displayOption(array $arr): void
 {
     echo "\t\t\t<option value=\"" . $arr["code"] . "\">" . $arr["name"] . "</option>\n";
 }
@@ -73,7 +73,7 @@ function displayOption($arr)
  * @param string $regionCode
  * @return array $departments
  */
-function getDepartments($regionCode = "11")
+function getDepartments(string $regionCode = "11"): array
 {
     $dptData = "./resources/departments.csv";
     $handle = fopen($dptData, "r");
@@ -112,7 +112,7 @@ function getDepartments($regionCode = "11")
  *
  * @return void
  */
-function displayCityForm()
+function displayCityForm(): void
 {
     if (isset($_GET["dpt"])) {
 
@@ -148,7 +148,7 @@ function displayCityForm()
  * @param string $dptCode
  * @return array $cities
  */
-function getCities($dptCode)
+function getCities(string $dptCode): array
 {
     $citiesData = "./resources/cities.csv";
     $handle = fopen($citiesData, "r");
@@ -180,7 +180,7 @@ function getCities($dptCode)
                 $city["lat"] = $data[$GPS_LAT];
                 $city["long"] = $data[$GPS_LNG];
                 //Add the city element to the $cities array and avoid duplicate names. 
-                if($city["name"] != $tmp){
+                if ($city["name"] != $tmp) {
                     $tmp = $city["name"];
                     $cities[] = $city;
                 }
@@ -196,13 +196,13 @@ function getCities($dptCode)
  *
  * @return void
  */
-function processCityForm()
+function processCityForm(): void
 {
     //empty($_GET["dpt"]) && 
     if (empty($_GET["dpt"]) && isset($_GET["city"])) {
         $encodedValue = $_GET["city"];
         parse_str($encodedValue, $city);
-        unset( $_SESSION["city"]);
+        unset($_SESSION["city"]);
         $_SESSION["city"] = $city;
         if (isset($city["lat"], $city["long"])) {
             $weatherData = queryWeatherAPIGPS($city["lat"], $city["long"]);
@@ -210,12 +210,16 @@ function processCityForm()
             $_SESSION["weather"] = $weatherData;
             displayWeather();
         }
-    }elseif (empty($_GET["dpt"]) && isset($_SESSION["weather"])){
+    } elseif (empty($_GET["dpt"]) && isset($_SESSION["weather"])) {
         displayWeather();
     }
 }
-
-function displayOptions()
+/**
+ * This function displays a simple form with 2 radio buttons.
+ *
+ * @return void
+ */
+function displayOptions(): void
 {
     if (isset($_SESSION["weather"])) {
         echo "<form method=\"GET\" action=\"weather.php\">\n";
@@ -237,7 +241,7 @@ function displayOptions()
  * @param string $zip A city zip code.
  * @return array $weatherData An associative array with weather data.
  */
-function queryWeatherAPI($zip)
+function queryWeatherAPI(string $zip): array
 {
     $url = "http://api.openweathermap.org/data/2.5/weather?zip=" . $zip . ",FR&appid=" . API_KEY;
     $json = file_get_contents($url);
@@ -256,7 +260,7 @@ function queryWeatherAPI($zip)
  * @param string $long
  * @return array $weatherData An associative array with weather data.
  */
-function queryWeatherAPIGPS($lat, $long)
+function queryWeatherAPIGPS(string $lat, string $long): array
 {
     $url = "https://api.openweathermap.org/data/2.5/onecall?lat=" . $lat . "&lon=" . $long . "&appid=" . API_KEY . "&lang=" . LANG . "&units=" . UNITS;
     $json = file_get_contents($url);
@@ -267,8 +271,12 @@ function queryWeatherAPIGPS($lat, $long)
     $weatherData = json_decode($json, true);
     return $weatherData;
 }
-
-function displayWeather($option = HOURLY)
+/**
+ *
+ * @param string $option
+ * @return void
+ */
+function displayWeather(string $option = HOURLY): void
 {
     if (isset($_GET["option"])) {
         $option = $_GET["option"];
@@ -288,8 +296,12 @@ function displayWeather($option = HOURLY)
         }
     }
 }
-
-function displayHourlyForecasts()
+/**
+ * This function displays an Hourly forecast for 48 hours
+ *
+ * @return void
+ */
+function displayHourlyForecasts(): void
 {
     $forecasts = $_SESSION["weather"]["hourly"];
 
@@ -310,8 +322,13 @@ function displayHourlyForecasts()
     echo "\t</tbody>\n";
     echo "</table>\n";
 }
-
-function displayHourlyForecast($forecast)
+/**
+ * This function displays the weather forecast of a single hour.
+ *
+ * @param array $forecast An associative array with the necessary information to display the forecast(dt, temp, weather, description, icon);
+ * @return void
+ */
+function displayHourlyForecast(array $forecast): void
 {
 
     $time = convertTime($forecast["dt"]);
@@ -326,18 +343,31 @@ function displayHourlyForecast($forecast)
     echo ("\t\t<td>" . $temp . " °C</td>\n");
     echo "\t</tr>\n";
 }
-
-function convertTime($dt)
+/**
+ * This utility function returns the hour corresponding provided unix time code
+ *
+ * @param string $dt a unix time code
+ * @return string the corresponding hour
+ */
+function convertTime(string $dt): string
 {
     return date("H \h i", $dt);
 }
-
-function displayWeatherIllustration($icon)
+/**
+ *
+ * @param string $icon the icon id. A list of the valid ids can be found on https://openweathermap.org/weather-conditions
+ * @return string 
+ */
+function displayWeatherIllustration(string $icon): string
 {
     return "<img src=\"http://openweathermap.org/img/wn/" . $icon . ".png \" alt=\"weather illustration\"/>\n";
 }
-
-function getRegionName()
+/**
+ * This utility function uses a sequential search to find the name assiociated with a regionCode in a csv file.
+ *
+ * @return string the region name
+ */
+function getRegionName(): string
 {
     if (isset($_GET["region"])) {
         $regionData = "./resources/regions.csv";
@@ -363,26 +393,44 @@ function getRegionName()
     }
 }
 
-function displayCity(){
-    require_once ("include/city.inc.php");
+/**
+ * 
+ *
+ * @return void
+ */
+function displayCity(): void
+{
+    require_once("include/city.inc.php");
 }
 
-function getCityName(){
+/**
+ * This functions returns the name of the city selected by the user (or a default name "Prévisions par ville");
+ *
+ * @return string
+ */
+function getCityName(): string
+{
     $name = null;
-    if(empty($_GET["dpt"]) && isset($_SESSION["city"])){
+    if (empty($_GET["dpt"]) && isset($_SESSION["city"])) {
         $name = $_SESSION["city"]["name"];
     }
-    if(empty($_GET["dpt"]) && isset($_GET["city"])){
+    if (empty($_GET["dpt"]) && isset($_GET["city"])) {
         parse_str($_GET["city"], $city);
         $name = $city["name"];
     }
-    if ($name == null){
+    if ($name == null) {
         $name = "Prévisions par ville";
     }
     return $name;
 }
 
-function displayDailyForecasts(){
+/**
+ * This function displays the weather forecast of the next 7 days.
+ *
+ * @return void
+ */
+function displayDailyForecasts(): void
+{
     $forecasts = $_SESSION["weather"]["daily"];
 
     echo "<table>\n";
@@ -402,8 +450,14 @@ function displayDailyForecasts(){
     echo "\t</tbody>\n";
     echo "</table>\n";
 }
-
-function displayDailyForecast($forecast){
+/**
+ * This function displays a daily forecast for a single day.
+ *
+ * @param array $forecast
+ * @return void
+ */
+function displayDailyForecast(array $forecast): void
+{
     $time = getDay($forecast["dt"]);
     $temp = $forecast["temp"]["day"];
     $weather = $forecast["weather"][0];
@@ -417,7 +471,14 @@ function displayDailyForecast($forecast){
     echo "\t</tr>\n";
 }
 
-function getDay($dt){
+/**
+ * This utility function returns the day in French corresponding to the provided unix time code.
+ *
+ * @param string $dt this should be a unix time code (precondition)
+ * @return string The corresponding day of the week in French.
+ */
+function getDay(string $dt): string
+{
     $frDays = array("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche");
     $date = getdate($dt);
     $wday = $date["wday"];
