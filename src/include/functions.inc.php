@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Set to true/false to see/hide debug elements.
  */
@@ -229,28 +230,22 @@ function displayDptMap()
 {
     if (isset($_GET["region"])) {
         $regionCode = $_GET["region"];
-        if($regionCode == 11)
-        {
+        if ($regionCode == 11) {
             require "./maps/ileDeFrance.map";
         }
-        if($regionCode == 53)
-        {
+        if ($regionCode == 53) {
             require "./maps/bretagne.map";
         }
-        if($regionCode == 28)
-        {
+        if ($regionCode == 28) {
             require "./maps/normandie.map";
         }
-        if($regionCode == 27)
-        {
+        if ($regionCode == 27) {
             require "./maps/bourgogneFrancheComte.map";
         }
-        if($regionCode == 24)
-        {
+        if ($regionCode == 24) {
             require "./maps/centreValDeLoire.map";
         }
-        if($regionCode == 94)
-        {
+        if ($regionCode == 94) {
             require "./maps/corse.map";
         }
     }
@@ -264,20 +259,43 @@ function displayDptMap()
  */
 function processCityForm(): void
 {
-    if (empty($_GET["dpt"]) && isset($_GET["city"])) {
-        $encodedValue = $_GET["city"];
-        parse_str($encodedValue, $city);
-        unset($_SESSION["city"]);
-        $_SESSION["city"] = $city;
-        if (isset($city["lat"], $city["long"])) {
-            $weatherData = queryWeatherAPIGPS($city["lat"], $city["long"]);
-            unset($_SESSION["weather"]);
-            $_SESSION["weather"] = $weatherData;
-            displayWeather();
-        }
-    } elseif (empty($_GET["dpt"]) && isset($_SESSION["weather"])) {
+    if (isset($_GET["city"])) {
+        processWeather();
+    } elseif (isset($_SESSION["weather"])) {
         displayWeather();
+    } elseif (isset($_COOKIE["city"])) {
+        processWeather();
     }
+}
+
+function processWeather(): void
+{
+    $city = decode_city($_GET["city"]);
+    $weatherData = getWeather($city);
+    setSessionWeather($weatherData);
+    displayWeather();
+}
+
+function getWeather(array $city): array
+{
+    if (isset($city["lat"], $city["long"])) {
+        $weatherData = queryWeatherAPIGPS($city["lat"], $city["long"]);
+        return $weatherData;
+    }
+}
+
+function setSessionWeather(array $weatherData): void
+{
+    unset($_SESSION["weather"]);
+    $_SESSION["weather"] = $weatherData;
+}
+
+function decode_city(string $encodedValue): array
+{
+    parse_str($encodedValue, $city);
+    unset($_SESSION["city"]);
+    $_SESSION["city"] = $city;
+    return $city;
 }
 
 /**
@@ -366,15 +384,6 @@ function displayWeather(string $option = HOURLY): void
     }
 }
 /**
- * 
- *
- * @return void
- */
-function displayCity(): void
-{
-    require_once("include/city.inc.php");
-}
-/**
  * This functions returns the name of the city selected by the user (or a default name "Prévisions par ville");
  *
  * @return string
@@ -382,10 +391,13 @@ function displayCity(): void
 function getCityName(): string
 {
     $name = null;
-    if (empty($_GET["dpt"]) && isset($_SESSION["city"])) {
+    if (isset($_GET["city"])) {
+        parse_str($_GET["city"], $city);
+        $name = $city["name"];
+    } elseif (isset($_SESSION["city"])) {
         $name = $_SESSION["city"]["name"];
-    }
-    if (empty($_GET["dpt"]) && isset($_GET["city"])) {
+    } elseif (isset($_COOKIE["city"])) {
+        $city = decode_city($_COOKIE["city"]);
         parse_str($_GET["city"], $city);
         $name = $city["name"];
     }
@@ -547,21 +559,4 @@ function count_hits(): int
     fwrite($file, strval($hits));
     fclose($file);
     return $hits;
-}
-
-/******************************COOKIES***********************************/
-
-/**
- * This function saves the last consulted city on the user's browser via a cookie.
- *
- * @return void
- */
-function city_cookie(): void
-{
-    $city = $_GET["city"];
-    if (isset($city)) {
-        //Stores the cookie for a month;
-        $time = time() + 60 * 60 * 24 * 30;
-        setcookie("city", $city,  $time, "weather/");
-    }
 }

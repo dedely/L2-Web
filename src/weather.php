@@ -1,13 +1,17 @@
 <?php
+include "include/cookies.inc.php";
 $title = "Weather";
 session_start();
+city_cookie();
 include "include/header.inc.php";
 ?>
 
-<?php
-displayCity();
-displayCityForm();
-?>
-
+<section>
+    <h2><?php echo getCityName() ?></h2>
+    <?php
+    displayCityForm();
+    processCityForm();
+    ?>
+</section>
 
 <?php require_once "include/footer.inc.php"; ?>
