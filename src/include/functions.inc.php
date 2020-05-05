@@ -55,7 +55,36 @@ function displayDptForm()
         echo "</form>\n";
     }
 }
-
+function displayDptMap()
+{
+    if (isset($_GET["region"])) {
+        $regionCode = $_GET["region"];
+        if($regionCode == 11)
+        {
+            require "./maps/ileDeFrance.map";
+        }
+        if($regionCode == 53)
+        {
+            require "./maps/bretagne.map";
+        }
+        if($regionCode == 28)
+        {
+            require "./maps/normandie.map";
+        }
+        if($regionCode == 27)
+        {
+            require "./maps/bourgogneFrancheComte.map";
+        }
+        if($regionCode == 24)
+        {
+            require "./maps/centreValDeLoire.map";
+        }
+        if($regionCode == 94)
+        {
+            require "./maps/corse.map";
+        }
+    }
+}
 /**
  *We're going to display options for the dpt and the cities forms, so might as well make it a function ;)
  * @param array $arr
