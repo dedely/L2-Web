@@ -260,17 +260,18 @@ function displayDptMap()
 function processCityForm(): void
 {
     if (isset($_GET["city"])) {
-        processWeather();
+        $city = decode_city($_GET["city"]);
+        processWeather( $city);
     } elseif (isset($_SESSION["weather"])) {
         displayWeather();
     } elseif (isset($_COOKIE["city"])) {
-        processWeather();
+        $city = decode_city($_COOKIE["city"]);
+        processWeather($city);
     }
 }
 
-function processWeather(): void
+function processWeather(array $city): void
 {
-    $city = decode_city($_GET["city"]);
     $weatherData = getWeather($city);
     setSessionWeather($weatherData);
     displayWeather();
