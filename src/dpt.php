@@ -2,11 +2,11 @@
     $title = "Dpt form";
     include "include/header.inc.php";
 ?>
-
         <section>
             <h2><?php echo getRegionName() ?></h2>
             <?php
                 displayDptForm();
+                displayDptMap();
             ?>
         </section>
 

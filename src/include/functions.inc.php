@@ -225,6 +225,37 @@ function displayCityForm(): void
     }
 }
 
+function displayDptMap()
+{
+    if (isset($_GET["region"])) {
+        $regionCode = $_GET["region"];
+        if($regionCode == 11)
+        {
+            require "./maps/ileDeFrance.map";
+        }
+        if($regionCode == 53)
+        {
+            require "./maps/bretagne.map";
+        }
+        if($regionCode == 28)
+        {
+            require "./maps/normandie.map";
+        }
+        if($regionCode == 27)
+        {
+            require "./maps/bourgogneFrancheComte.map";
+        }
+        if($regionCode == 24)
+        {
+            require "./maps/centreValDeLoire.map";
+        }
+        if($regionCode == 94)
+        {
+            require "./maps/corse.map";
+        }
+    }
+}
+
 /*********API QUERY******/
 /**
  * test function
