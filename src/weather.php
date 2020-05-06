@@ -1,8 +1,9 @@
 <?php
 include "include/cookies.inc.php";
-$title = "Weather";
+$title = "Prévisions météo";
 session_start();
 city_cookie();
+option_cookie();
 include "include/header.inc.php";
 ?>
 

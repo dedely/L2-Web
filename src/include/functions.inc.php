@@ -261,12 +261,18 @@ function processCityForm(): void
 {
     if (isset($_GET["city"])) {
         $city = decode_city($_GET["city"]);
-        processWeather( $city);
-    } elseif (isset($_SESSION["weather"])) {
-        displayWeather();
+        register_city($city);
+        processWeather($city);
+    } elseif (isset($_SESSION["city"]) && isset($_SESSION["weather"])) {
+        if (isInDpt($_SESSION["city"]["code"])) {
+            displayWeather();
+        }
     } elseif (isset($_COOKIE["city"])) {
         $city = decode_city($_COOKIE["city"]);
-        processWeather($city);
+        if (isInDpt($city["code"])) {
+            register_city($city);
+            processWeather($city);
+        }
     }
 }
 
@@ -291,12 +297,28 @@ function setSessionWeather(array $weatherData): void
     $_SESSION["weather"] = $weatherData;
 }
 
+function register_city(array $city): void
+{
+    unset($_SESSION["city"]);
+    $_SESSION["city"] = $city;
+}
+
 function decode_city(string $encodedValue): array
 {
     parse_str($encodedValue, $city);
-    unset($_SESSION["city"]);
-    $_SESSION["city"] = $city;
     return $city;
+}
+
+function isInDpt(string $zip) : bool
+{
+    //We suppose it's true first, as when $_GET["dpt"] is empty, the user is only switching options and we don't need to apply our filter.
+    $assertion = true;
+    if (isset($_GET["dpt"])) {
+        $dpt = $_GET["dpt"];
+        $tmp = substr($zip, 0, 2);
+        $assertion = strcmp($dpt, $tmp) == 0;
+    }
+    return $assertion;
 }
 
 /**
@@ -368,6 +390,8 @@ function displayWeather(string $option = HOURLY): void
 {
     if (isset($_GET["option"])) {
         $option = $_GET["option"];
+    } elseif (isset($_COOKIE["option"])) {
+        $option = $_COOKIE["option"];
     }
     displayOptions();
     if (isset($_SESSION["weather"])) {
@@ -395,12 +419,13 @@ function getCityName(): string
     if (isset($_GET["city"])) {
         parse_str($_GET["city"], $city);
         $name = $city["name"];
+    } elseif (isset($_COOKIE["city"])) {
+        parse_str($_COOKIE["city"], $city);
+        if (isInDpt($city["code"])) {
+            $name = $city["name"];
+        }
     } elseif (isset($_SESSION["city"])) {
         $name = $_SESSION["city"]["name"];
-    } elseif (isset($_COOKIE["city"])) {
-        $city = decode_city($_COOKIE["city"]);
-        parse_str($_GET["city"], $city);
-        $name = $city["name"];
     }
     if ($name == null) {
         $name = "Prévisions par ville";

@@ -26,5 +26,16 @@ include "include/header.inc.php";
             
         </section>
 
+        <section>
+            <h2>Nouveautés</h2>
+            <ul>
+                <li>Ajout des cartes de région cliquables</li>
+                <li>Suppression des doublons dans la liste déroulante des villes (filtre php, donc sans modifier le csv)</li>
+                <li>Ajout des cookies pour la dernière ville consultée</li>
+                <li>Ajout des cookies de préférence pour l'affichage des résultats</li>
+                <li>Ajout d'un compteur de hits et ébauche de la page de statistiques.</li>
+            </ul>
+        </section>
+
 
 <?php require_once "include/footer.inc.php"; ?>

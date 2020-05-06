@@ -17,4 +17,16 @@ function city_cookie(): void
         setcookie("city", $_GET["city"],  $time, "weather/");
     }
 }
+/**
+ * 
+ *
+ * @return void
+ */
+function option_cookie(): void {
+    if (isset($_GET["option"])) {
+        //Stores the cookie for a month;
+        $time = time() + MONTH;
+        setcookie("option", $_GET["option"],  $time, "weather/");
+    }
+}
 ?>

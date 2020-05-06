@@ -25,7 +25,7 @@
             <nav>
                 <ul id="nav">
                     <li><a href="index.php">Accueil</a></li>
-                    <li><a href="comingsoon.php">Statistiques</a></li>
+                    <li><a href="stats.php">Statistiques</a></li>
                 </ul>
             </nav>
         </header>

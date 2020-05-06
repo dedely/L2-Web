@@ -1,5 +1,5 @@
 <?php
-    $title = "Dpt form";
+    $title = "Région";
     include "include/header.inc.php";
 ?>
         <section>
