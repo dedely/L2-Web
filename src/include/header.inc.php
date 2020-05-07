@@ -2,7 +2,7 @@
     include "include/functions.inc.php";
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
     <head>
         <title><?php echo $title ?></title>
@@ -30,4 +30,3 @@
             </nav>
         </header>
         <?php count_hits() ?>
-        

@@ -24,6 +24,9 @@ define("DAILY", "daily");
 date_default_timezone_set('Europe/Paris');
 
 define("HITS_FILE", "./stats/hits.txt");
+define("DPT_STATS_FILE", "./stats/hits.txt");
+
+define("GEOAPI_URL", "https://geo.api.gouv.fr/communes/");
 
 /***********CSV QUERIES******/
 
@@ -101,7 +104,7 @@ function getCities(string $dptCode): array
             if ($data[$DPT_CODE] != $dptCode) {
                 $stop = true;
             } else {
-                $city["code"] = $data[$ZIP_CODE];
+                $city["code"] = $data[$INSEE_CODE];
                 $city["name"] = $data[$CITY_NAME];
                 $city["lat"] = $data[$GPS_LAT];
                 $city["long"] = $data[$GPS_LNG];
@@ -309,7 +312,7 @@ function decode_city(string $encodedValue): array
     return $city;
 }
 
-function isInDpt(string $zip) : bool
+function isInDpt(string $zip): bool
 {
     //We suppose it's true first, as when $_GET["dpt"] is empty, the user is only switching options and we don't need to apply our filter.
     $assertion = true;
@@ -349,14 +352,35 @@ function queryWeatherAPI(string $zip): array
  */
 function queryWeatherAPIGPS(string $lat, string $long): array
 {
+    $weatherData = false;
     $url = "https://api.openweathermap.org/data/2.5/onecall?lat=" . $lat . "&lon=" . $long . "&appid=" . API_KEY . "&lang=" . LANG . "&units=" . UNITS;
     $json = file_get_contents($url);
     if (DEBUG) {
         echo "<p>" . $url . "</p>\n";
         echo "<p>" . $json . "</p>\n";
     }
-    $weatherData = json_decode($json, true);
+    if($json != false){
+        $weatherData = json_decode($json, true);
+    }
     return $weatherData;
+}
+
+/**
+ * This function sends a query to the geo.api.gouv.fr API in order to get general informations on a French city given its INSEE code.
+ *
+ * @param string $inseeCode
+ * @return mixed $cityData general information about a city.
+ */
+function queryGeoAPI(string $inseeCode)
+{
+    $url = GEOAPI_URL . $inseeCode;
+    $json = file_get_contents($url);
+    if (DEBUG) {
+        echo "<p>" . $url . "</p>\n";
+        echo "<p>" . $json . "</p>\n";
+    }
+    $cityData = json_decode($json, true);
+    return $cityData;
 }
 
 /*********RESULTS*****/
@@ -394,6 +418,7 @@ function displayWeather(string $option = HOURLY): void
         $option = $_COOKIE["option"];
     }
     displayOptions();
+    displayPopulation();
     if (isset($_SESSION["weather"])) {
         switch ($option) {
             case HOURLY:
@@ -431,6 +456,21 @@ function getCityName(): string
         $name = "Prévisions par ville";
     }
     return $name;
+}
+
+function getPopulation($cityData) : int {
+    $population = 0;
+    if(isset($cityData["population"])){
+        $population = $cityData["population"];
+    }
+    return $population;
+}
+
+function displayPopulation() : void {
+    $inseeCode = $_SESSION["city"]["code"];
+    $cityData = queryGeoAPI($inseeCode);
+    $population = getPopulation($cityData);
+    echo "\t\t\t <p>Population: " . $population . "</p>\n";
 }
 
 /******************FORECAST DISPLAY***************/
@@ -585,4 +625,9 @@ function count_hits(): int
     fwrite($file, strval($hits));
     fclose($file);
     return $hits;
+}
+
+function count_dpt(): void
+{
+    $file = fopen(DPT_STATS_FILE, "r+");
 }
