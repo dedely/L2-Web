@@ -73,6 +73,47 @@ function getDepartments(string $regionCode = "11"): array
 
 /**
  * A simple utility method which uses a csv file to return the appropriate informations.
+ * The csv file is sorted by regionCode.
+ *
+ * @param string $regionCode
+ * @return array $departments
+ */
+function getDepartmentsMap($regionCode = "11")
+{
+    $dptsMapsData = "./resources/departmentsMaps.csv";
+    $handle = fopen($dptsMapsData, "r");
+
+    //Change the following variables if changes are made in the csv file.
+    $REGION_CODE = 0;
+    $DPT_MAP_PATHNAME = 1;
+    $REGION_OVERVIEW_PATHNAME = 2;
+
+    //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
+    fgets($handle);
+    $departmentsMap = array();
+    $stop = false;
+    $state = 0;
+    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE) && !$stop) {
+        if (($state == 0) && ($data[$REGION_CODE] == $regionCode)) {
+            $state = 1;
+        }
+        if ($state == 1) {
+            //We stop once we found all the information about a given dpt.
+            if ($data[$REGION_CODE] != $regionCode) {
+                $stop = true;
+            }
+            if ($data[$REGION_CODE] == $regionCode) {
+
+                $departmentsMap["dptMapPathname"] = $data[$DPT_MAP_PATHNAME];
+                $departmentsMap["regionOverviewPathname"] = $data[$REGION_OVERVIEW_PATHNAME];
+            }
+        }
+    }
+    fclose($handle);
+    return $departmentsMap;
+}
+/**
+ * A simple utility method which uses a csv file to return the appropriate informations.
  *
  * @param string $dptCode
  * @return array $cities
@@ -229,28 +270,24 @@ function displayCityForm(): void
     }
 }
 
+/**
+ * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
+ * 
+ * @return void
+ */
 function displayDptMap()
 {
     if (isset($_GET["region"])) {
         $regionCode = $_GET["region"];
-        if ($regionCode == 11) {
-            require "./maps/ileDeFrance.map";
-        }
-        if ($regionCode == 53) {
-            require "./maps/bretagne.map";
-        }
-        if ($regionCode == 28) {
-            require "./maps/normandie.map";
-        }
-        if ($regionCode == 27) {
-            require "./maps/bourgogneFrancheComte.map";
-        }
-        if ($regionCode == 24) {
-            require "./maps/centreValDeLoire.map";
-        }
-        if ($regionCode == 94) {
-            require "./maps/corse.map";
-        }
+
+        $departmentsMap = getDepartmentsMap($regionCode);
+
+        $regionOverviewPathname = $departmentsMap["regionOverviewPathname"];
+        echo "<aside>";
+        echo "<img class=\"leftOverview\" src=$regionOverviewPathname alt=\"Region Overview\"/>";
+        echo "</aside>";
+
+        require $departmentsMap["dptMapPathname"];
     }
 }
 
@@ -359,7 +396,7 @@ function queryWeatherAPIGPS(string $lat, string $long): array
         echo "<p>" . $url . "</p>\n";
         echo "<p>" . $json . "</p>\n";
     }
-    if($json != false){
+    if ($json != false) {
         $weatherData = json_decode($json, true);
     }
     return $weatherData;
@@ -458,15 +495,17 @@ function getCityName(): string
     return $name;
 }
 
-function getPopulation($cityData) : int {
+function getPopulation($cityData): int
+{
     $population = 0;
-    if(isset($cityData["population"])){
+    if (isset($cityData["population"])) {
         $population = $cityData["population"];
     }
     return $population;
 }
 
-function displayPopulation() : void {
+function displayPopulation(): void
+{
     $inseeCode = $_SESSION["city"]["code"];
     $cityData = queryGeoAPI($inseeCode);
     $population = getPopulation($cityData);

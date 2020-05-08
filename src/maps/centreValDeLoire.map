@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/regionsMaps/centreValDeLoire.png" width="280" height="341" border="0" usemap="#map" />
+    <img src="./images/dptMaps/centreValDeLoire.png" width="280" height="341" border="0" usemap="#map" />
 </div>
 
 <map name="map">

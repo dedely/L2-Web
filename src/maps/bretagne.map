@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/regionsMaps/bretagne.svg" width="809" height="503" border="0" usemap="#map" />
+    <img src="./images/dptMaps/bretagne.svg" width="809" height="503" border="0" usemap="#map" />
 </div>
 
 <map name="map">
