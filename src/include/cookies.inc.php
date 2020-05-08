@@ -6,7 +6,7 @@ define("DOMAIN", "weather/");
 
 /**
  * This function saves the last consulted city on the user's browser via a cookie.
- *
+ * @author Adel
  * @return void
  */
 function city_cookie(): void
@@ -19,7 +19,7 @@ function city_cookie(): void
 }
 /**
  * 
- *
+ * @author Adel
  * @return void
  */
 function option_cookie(): void {

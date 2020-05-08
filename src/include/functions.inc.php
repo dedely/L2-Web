@@ -33,7 +33,7 @@ define("GEOAPI_URL", "https://geo.api.gouv.fr/communes/");
 /**
  * A simple utility method which uses a csv file to return the appropriate informations.
  * The csv file is sorted by regionCode.
- *
+ * @author Adel
  * @param string $regionCode
  * @return array $departments
  */
@@ -74,7 +74,7 @@ function getDepartments(string $regionCode = "11"): array
 /**
  * A simple utility method which uses a csv file to return the appropriate informations.
  * The csv file is sorted by regionCode.
- *
+ * @author Adel
  * @param string $regionCode
  * @return array $departments
  */
@@ -114,7 +114,7 @@ function getDepartmentsMap($regionCode = "11")
 }
 /**
  * A simple utility method which uses a csv file to return the appropriate informations.
- *
+ * @author Adel
  * @param string $dptCode
  * @return array $cities
  */
@@ -163,7 +163,7 @@ function getCities(string $dptCode): array
 
 /**
  * This utility function uses a sequential search to find the name assiociated with a regionCode in a csv file.
- *
+ * @author Adel
  * @return string the region name
  */
 function getRegionName(): string
@@ -195,7 +195,7 @@ function getRegionName(): string
 /*******DROPDOWN FORMS********/
 /**
  * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
- * 
+ * @author Adel
  * @return void
  */
 function displayDptForm(): void
@@ -227,6 +227,7 @@ function displayDptForm(): void
 
 /**
  *We're going to display options for the dpt and the cities forms, so might as well make it a function ;)
+ * @author Adel
  * @param array $arr
  * @return void
  */
@@ -237,7 +238,7 @@ function displayOption(array $arr): void
 
 /**
  * This function displays a dropdown form of the cities in a given department.
- *
+ * @author Adel 
  * @return void
  */
 function displayCityForm(): void
@@ -271,12 +272,7 @@ function displayCityForm(): void
     }
 }
 
-/**
- * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
- * 
- * @return void
- */
-function displayDptMap()
+function displayDptMap() :void
 {
     if (isset($_GET["region"])) {
         $regionCode = $_GET["region"];
@@ -295,7 +291,7 @@ function displayDptMap()
 /*********API QUERY******/
 /**
  * test function
- *
+ * @author Adel
  * @return void
  */
 function processCityForm(): void
@@ -365,7 +361,7 @@ function isInDpt(string $zip): bool
 /**
  * This function sends a query to the openweathermap api using the provided zip code to get weather data as a json string.
  * NOTE: Atm, we don't take into consideration the possibility of a query failing. We'll add additionnal logic later.
- *
+ * @author Adel
  * @param string $zip A city zip code.
  * @return array $weatherData An associative array with weather data.
  */
@@ -383,7 +379,7 @@ function queryWeatherAPI(string $zip): array
 
 /**
  * This function sends a query to the openweathermap one call api using the provided gps information to get weather data as a json string.
- *
+ * @author Adel
  * @param string $lat
  * @param string $long
  * @return array $weatherData An associative array with weather data.
@@ -405,7 +401,7 @@ function queryWeatherAPIGPS(string $lat, string $long): array
 
 /**
  * This function sends a query to the geo.api.gouv.fr API in order to get general informations on a French city given its INSEE code.
- *
+ * @author Adel
  * @param string $inseeCode
  * @return mixed $cityData general information about a city.
  */
@@ -425,7 +421,7 @@ function queryGeoAPI(string $inseeCode)
 
 /**
  * This function displays a simple form with 2 radio buttons.
- *
+ * @author Adel
  * @return void
  */
 function displayOptions(): void
@@ -444,8 +440,10 @@ function displayOptions(): void
     }
 }
 /**
- *
- * @param string $option
+ * This function is used to call the appropriate display function depending on which option was selected.
+ * The hourly forecast is displayed by default.
+ * @author Adel
+ * @param string $option must be either "hourly" or "daily"
  * @return void
  */
 function displayWeather(string $option = HOURLY): void
@@ -473,7 +471,7 @@ function displayWeather(string $option = HOURLY): void
 }
 /**
  * This functions returns the name of the city selected by the user (or a default name "Prévisions par ville");
- *
+ * @author Adel
  * @return string
  */
 function getCityName(): string
@@ -495,7 +493,12 @@ function getCityName(): string
     }
     return $name;
 }
-
+/**
+ * This function uses data provided by the geo api and returns the population.
+ * @author Adel
+ * @param array $cityData the data provided by geo api as an array
+ * @return integer $population
+ */
 function getPopulation($cityData): int
 {
     $population = 0;
@@ -504,7 +507,11 @@ function getPopulation($cityData): int
     }
     return $population;
 }
-
+/**
+ * This function displays the population of a French city using its insee code in the $_SESSION array.
+ * @author Adel
+ * @return void
+ */
 function displayPopulation(): void
 {
     $inseeCode = $_SESSION["city"]["code"];
@@ -516,7 +523,7 @@ function displayPopulation(): void
 /******************FORECAST DISPLAY***************/
 
 /**
- *
+ * @author Adel
  * @param string $icon the icon id. A list of the valid ids can be found on https://openweathermap.org/weather-conditions
  * @return string 
  */
@@ -527,7 +534,7 @@ function displayWeatherIllustration(string $icon): string
 
 /**
  * This function displays an Hourly forecast for 48 hours
- *
+ * @author Adel
  * @return void
  */
 function displayHourlyForecasts(): void
@@ -553,7 +560,7 @@ function displayHourlyForecasts(): void
 }
 /**
  * This function displays the weather forecast of a single hour.
- *
+ * @author Adel
  * @param array $forecast An associative array with the necessary information to display the forecast(dt, temp, weather, description, icon);
  * @return void
  */
@@ -574,7 +581,7 @@ function displayHourlyForecast(array $forecast): void
 }
 /**
  * This function displays the weather forecast of the next 7 days.
- *
+ * @author Adel
  * @return void
  */
 function displayDailyForecasts(): void
@@ -600,7 +607,7 @@ function displayDailyForecasts(): void
 }
 /**
  * This function displays a daily forecast for a single day.
- *
+ * @author Adel
  * @param array $forecast
  * @return void
  */
@@ -623,7 +630,7 @@ function displayDailyForecast(array $forecast): void
 
 /**
  * This utility function returns the hour corresponding provided unix time code
- *
+ * @author Adel
  * @param string $dt a unix time code
  * @return string the corresponding hour
  */
@@ -634,7 +641,7 @@ function convertTime(string $dt): string
 
 /**
  * This utility function returns the day in French corresponding to the provided unix time code.
- *
+ * @author Adel
  * @param string $dt this should be a unix time code (precondition)
  * @return string The corresponding day of the week in French.
  */
@@ -669,7 +676,7 @@ function count_hits(): int
 
 /**
  * This function keeps track of the department queries using a csv file.
- *
+ * @author Adel
  * @param string $dptCode the department code
  * @return void
  */
@@ -701,6 +708,7 @@ function count_dpt(string $dptCode): void
 /**
  * This function gives the amount of time a request was made for a given department.
  * It uses a simple sequential search algorithm, reading a csv file.
+ * @author Adel
  * @param string $dptCode the department code.
  * @return int|false $count The amount of time a request has been made for the dpt or false if no match was found.
  */

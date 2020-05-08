@@ -1,6 +1,11 @@
 <?php
 define("DPT_STATS_FILE", "../stats/dpt_stats.csv");
 
+/**
+ * This function reads dpt_stats.csv and returns statistics about the departments queries as an array
+ * @author Adel
+ * @return array
+ */
 function getDptData(): array
 {
     $input = fopen(DPT_STATS_FILE, "r");
