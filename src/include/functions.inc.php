@@ -24,8 +24,8 @@ define("DAILY", "daily");
 date_default_timezone_set('Europe/Paris');
 
 define("HITS_FILE", "./stats/hits.txt");
-define("DPT_STATS_FILE", "./stats/hits.txt");
-
+define("DPT_STATS_FILE", "./stats/dpt_stats.csv");
+define("STATS_PATH", "./stats/");
 define("GEOAPI_URL", "https://geo.api.gouv.fr/communes/");
 
 /***********CSV QUERIES******/
@@ -245,6 +245,7 @@ function displayCityForm(): void
     if (isset($_GET["dpt"])) {
 
         $dptCode = $_GET["dpt"];
+        count_dpt($dptCode);
         if (DEBUG) {
             echo "<p>regionCode: " . $dptCode . "</p>\n";
         }
@@ -666,7 +667,56 @@ function count_hits(): int
     return $hits;
 }
 
-function count_dpt(): void
+/**
+ * This function keeps track of the department queries using a csv file.
+ *
+ * @param string $dptCode the department code
+ * @return void
+ */
+function count_dpt(string $dptCode): void
 {
-    $file = fopen(DPT_STATS_FILE, "r+");
+    //The naive approach is to rewrite the entire file
+    $input = fopen(DPT_STATS_FILE, "r");
+    $output = fopen(STATS_PATH . "tmp.csv", 'w');
+    //Change the following variables if changes are made in the csv file.
+    $REGION_CODE = 0;
+    $DPT_CODE = 1;
+    $COUNT = 2;
+    while ((($data = fgetcsv($input, ",")) !== FALSE)) {
+        if (($data[$DPT_CODE] == $dptCode)) {
+            $count = intval($data[$COUNT]);
+            //increment the counter value and replace the old value.
+            $data[$COUNT] = ++$count;
+        }
+        fputcsv($output, $data);
+    }
+    fclose($input);
+    fclose($output);
+
+    //clean up
+    unlink(DPT_STATS_FILE); // Delete obsolete CSV
+    rename(STATS_PATH . "tmp.csv", DPT_STATS_FILE); //Rename temporary to new
+}
+
+/**
+ * This function gives the amount of time a request was made for a given department.
+ * It uses a simple sequential search algorithm, reading a csv file.
+ * @param string $dptCode the department code.
+ * @return int|false $count The amount of time a request has been made for the dpt or false if no match was found.
+ */
+function getDptCount(string $dptCode){
+    $input = fopen(DPT_STATS_FILE, "r");
+    $DPT_CODE = 1;
+    $COUNT = 2;
+    $stop = false;
+    $count = false;
+    while ((($data = fgetcsv($input, ",")) !== FALSE) && !$stop) {
+        if (($data[$DPT_CODE] == $dptCode)) {
+            $count = intval($data[$COUNT]);
+            //stop once found.
+            $stop = true;
+        }
+    }
+    fclose($input);
+    return $count;
 }

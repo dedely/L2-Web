@@ -1,5 +1,6 @@
 <?php
 $title = "Statistiques";
+include "include/stats.inc.php";
 include "include/header.inc.php";
 ?>
 
