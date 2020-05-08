@@ -412,13 +412,13 @@ function displayOptions(): void
  */
 function displayWeather(string $option = HOURLY): void
 {
+    displayPopulation();
     if (isset($_GET["option"])) {
         $option = $_GET["option"];
     } elseif (isset($_COOKIE["option"])) {
         $option = $_COOKIE["option"];
     }
     displayOptions();
-    displayPopulation();
     if (isset($_SESSION["weather"])) {
         switch ($option) {
             case HOURLY:

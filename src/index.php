@@ -34,6 +34,7 @@ include "include/header.inc.php";
                 <li>Ajout des cookies pour la dernière ville consultée</li>
                 <li>Ajout des cookies de préférence pour l'affichage des résultats</li>
                 <li>Ajout d'un compteur de hits et ébauche de la page de statistiques.</li>
+                <li>Ajout de l'affichage de la population</li>
             </ul>
         </section>
 
