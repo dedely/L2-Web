@@ -1,6 +1,5 @@
 <?php
 $title = "Statistiques";
-include "include/stats.inc.php";
 include "include/header.inc.php";
 ?>
 
@@ -8,6 +7,7 @@ include "include/header.inc.php";
     <h2>Statistiques générales</h2>
     <div class=center>
         <p>Nombre de hits : <?php echo count_hits() ?></p>
+        <?php echo "<img src=\"stats/dpt_chart.php\" alt=\"test\"/>"?>
     </div>
 </section>
 
