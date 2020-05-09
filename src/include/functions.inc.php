@@ -25,6 +25,7 @@ date_default_timezone_set('Europe/Paris');
 
 define("HITS_FILE", "./stats/hits.txt");
 define("DPT_STATS_FILE", "./stats/dpt_stats.csv");
+define("OPTION_STATS_FILE", "./stats/options.csv");
 define("STATS_PATH", "./stats/");
 define("GEOAPI_URL", "https://geo.api.gouv.fr/communes/");
 
@@ -272,7 +273,7 @@ function displayCityForm(): void
     }
 }
 
-function displayDptMap() :void
+function displayDptMap(): void
 {
     if (isset($_GET["region"])) {
         $regionCode = $_GET["region"];
@@ -313,6 +314,12 @@ function processCityForm(): void
     }
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param array $city
+ * @return void
+ */
 function processWeather(array $city): void
 {
     $weatherData = getWeather($city);
@@ -320,6 +327,12 @@ function processWeather(array $city): void
     displayWeather();
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param array $city
+ * @return array
+ */
 function getWeather(array $city): array
 {
     if (isset($city["lat"], $city["long"])) {
@@ -328,24 +341,48 @@ function getWeather(array $city): array
     }
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param array $weatherData
+ * @return void
+ */
 function setSessionWeather(array $weatherData): void
 {
     unset($_SESSION["weather"]);
     $_SESSION["weather"] = $weatherData;
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param array $city
+ * @return void
+ */
 function register_city(array $city): void
 {
     unset($_SESSION["city"]);
     $_SESSION["city"] = $city;
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param string $encodedValue
+ * @return array
+ */
 function decode_city(string $encodedValue): array
 {
     parse_str($encodedValue, $city);
     return $city;
 }
 
+/**
+ * Undocumented function
+ * @author Adel
+ * @param string $zip
+ * @return boolean
+ */
 function isInDpt(string $zip): bool
 {
     //We suppose it's true first, as when $_GET["dpt"] is empty, the user is only switching options and we don't need to apply our filter.
@@ -456,6 +493,7 @@ function displayWeather(string $option = HOURLY): void
     }
     displayOptions();
     if (isset($_SESSION["weather"])) {
+        count_option($option);
         switch ($option) {
             case HOURLY:
                 displayHourlyForecasts();
@@ -691,8 +729,9 @@ function count_dpt(string $dptCode): void
     $COUNT = 2;
     while ((($data = fgetcsv($input, ",")) !== FALSE)) {
         if (($data[$DPT_CODE] == $dptCode)) {
+            //convert from string to int first
             $count = intval($data[$COUNT]);
-            //increment the counter value and replace the old value.
+            //increment the counter value and replace the old value
             $data[$COUNT] = ++$count;
         }
         fputcsv($output, $data);
@@ -712,7 +751,8 @@ function count_dpt(string $dptCode): void
  * @param string $dptCode the department code.
  * @return int|false $count The amount of time a request has been made for the dpt or false if no match was found.
  */
-function getDptCount(string $dptCode){
+function getDptCount(string $dptCode)
+{
     $input = fopen(DPT_STATS_FILE, "r");
     $DPT_CODE = 1;
     $COUNT = 2;
@@ -727,4 +767,29 @@ function getDptCount(string $dptCode){
     }
     fclose($input);
     return $count;
+}
+
+function count_option(string $option)
+{
+    //The naive approach is to rewrite the entire file
+    $input = fopen(OPTION_STATS_FILE, "r");
+    $output = fopen(STATS_PATH . "tmp2.csv", 'w');
+    //Change the following variables if changes are made in the csv file.
+    $OPTION = 0;
+    $COUNT = 1;
+    while ((($data = fgetcsv($input, ",")) !== FALSE)) {
+        if (($data[$OPTION] == $option)) {
+            //convert from string to int first
+            $count = intval($data[$COUNT]);
+            //increment the counter value and replace the old value
+            $data[$COUNT] = ++$count;
+        }
+        fputcsv($output, $data);
+    }
+    fclose($input);
+    fclose($output);
+
+    //clean up
+    unlink(OPTION_STATS_FILE); // Delete obsolete CSV
+    rename(STATS_PATH . "tmp2.csv", OPTION_STATS_FILE); //Rename temporary to new
 }
