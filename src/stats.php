@@ -1,6 +1,7 @@
 <?php
 $title = "Statistiques";
 include "include/header.inc.php";
+count_detailed_hits("stats");
 ?>
 
 <section>
@@ -8,8 +9,9 @@ include "include/header.inc.php";
     <div class=center>
         <p>Nombre de hits : <?php echo count_hits() ?></p>
         <?php 
-        echo "<img src=\"stats/dpt_chart.php\" alt=\"test\"/>";
-        echo "<img src=\"stats/option_chart.php\" alt=\"test\"/>";
+        echo "<img src=\"stats/region_chart.php\" alt=\"test\"/>\n";
+        echo "<img src=\"stats/option_chart.php\" alt=\"test\"/>\n";
+        echo "<img src=\"stats/hits_chart.php\" alt=\"test\"/>\n";
         ?>
     </div>
 </section>

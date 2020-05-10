@@ -1,12 +1,12 @@
 <?php
 
 /**
- * The following file is heavily inspired by the jpgraph simple pie plot example.
+ * The following file is based on the jpgraph simple pie plot example.
  * It can be found at https://jpgraph.net/features/src/show-example.php?target=new_pie1.php
  */
 include "../include/stats.inc.php";
-require_once('../jpgraph/jpgraph.php');
-require_once('../jpgraph/jpgraph_pie.php');
+require_once("../jpgraph/jpgraph.php");
+require_once("../jpgraph/jpgraph_pie.php");
 
 // Organise data
 $tmp = getDptData();

@@ -5,6 +5,7 @@ session_start();
 city_cookie();
 option_cookie();
 include "include/header.inc.php";
+count_detailed_hits("weather");
 ?>
 
 <section>

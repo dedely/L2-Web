@@ -26,6 +26,7 @@ date_default_timezone_set('Europe/Paris');
 define("HITS_FILE", "./stats/hits.txt");
 define("DPT_STATS_FILE", "./stats/dpt_stats.csv");
 define("OPTION_STATS_FILE", "./stats/options.csv");
+define("DETAILED_STATS_FILE", "./stats/detailed_hits.csv");
 define("STATS_PATH", "./stats/");
 define("GEOAPI_URL", "https://geo.api.gouv.fr/communes/");
 
@@ -238,18 +239,27 @@ function displayOption(array $arr): void
 }
 
 /**
- * This function displays a dropdown form of the cities in a given department.
+ * This function displays a dropdown form of the cities in a given department using either the result of the dpt form or the $_SESSION
  * @author Adel 
  * @return void
  */
 function displayCityForm(): void
 {
+    $proceed = false;
     if (isset($_GET["dpt"])) {
 
         $dptCode = $_GET["dpt"];
         count_dpt($dptCode);
+        register_dpt($dptCode);
+        $proceed = true;
+    }
+    //Try to display the dropdown form everytime
+    if ($proceed || isset($_SESSION["dpt"])) {
         if (DEBUG) {
-            echo "<p>regionCode: " . $dptCode . "</p>\n";
+            echo "<p>dptCode: " . $dptCode . "</p>\n";
+        }
+        if (empty($dptCode)) {
+            $dptCode = $_SESSION["dpt"];
         }
         $cities = getCities($dptCode);
 
@@ -365,6 +375,12 @@ function register_city(array $city): void
     $_SESSION["city"] = $city;
 }
 
+function register_dpt(string $dptCode): void
+{
+    unset($_SESSION["dpt"]);
+    $_SESSION["dpt"] = $dptCode;
+}
+
 /**
  * Undocumented function
  * @author Adel
@@ -440,16 +456,12 @@ function queryWeatherAPIGPS(string $lat, string $long): array
  * This function sends a query to the geo.api.gouv.fr API in order to get general informations on a French city given its INSEE code.
  * @author Adel
  * @param string $inseeCode
- * @return mixed $cityData general information about a city.
+ * @return mixed $cityData general information about a city or false if the query failed.
  */
 function queryGeoAPI(string $inseeCode)
 {
     $url = GEOAPI_URL . $inseeCode;
     $json = file_get_contents($url);
-    if (DEBUG) {
-        echo "<p>" . $url . "</p>\n";
-        echo "<p>" . $json . "</p>\n";
-    }
     $cityData = json_decode($json, true);
     return $cityData;
 }
@@ -535,14 +547,12 @@ function getCityName(): string
  * This function uses data provided by the geo api and returns the population.
  * @author Adel
  * @param array $cityData the data provided by geo api as an array
- * @return integer $population
+ * @return integer $population or false if the api query failed
  */
-function getPopulation($cityData): int
+function getPopulation($inseeCode)
 {
-    $population = 0;
-    if (isset($cityData["population"])) {
-        $population = $cityData["population"];
-    }
+    $cityData = queryGeoAPI($inseeCode);
+    $population = $cityData["population"];
     return $population;
 }
 /**
@@ -553,8 +563,7 @@ function getPopulation($cityData): int
 function displayPopulation(): void
 {
     $inseeCode = $_SESSION["city"]["code"];
-    $cityData = queryGeoAPI($inseeCode);
-    $population = getPopulation($cityData);
+    $population = getPopulation($inseeCode);
     echo "\t\t\t <p>Population: " . $population . "</p>\n";
 }
 
@@ -748,6 +757,7 @@ function count_dpt(string $dptCode): void
  * This function gives the amount of time a request was made for a given department.
  * It uses a simple sequential search algorithm, reading a csv file.
  * @author Adel
+ * @deprecated we now use getDptData() in stats.inc.php
  * @param string $dptCode the department code.
  * @return int|false $count The amount of time a request has been made for the dpt or false if no match was found.
  */
@@ -768,7 +778,12 @@ function getDptCount(string $dptCode)
     fclose($input);
     return $count;
 }
-
+/**
+ * This function stores information about which option was used to display the weather forecast in a csv file.
+ * @author Adel
+ * @param string $option
+ * @return void
+ */
 function count_option(string $option)
 {
     //The naive approach is to rewrite the entire file
@@ -792,4 +807,64 @@ function count_option(string $option)
     //clean up
     unlink(OPTION_STATS_FILE); // Delete obsolete CSV
     rename(STATS_PATH . "tmp2.csv", OPTION_STATS_FILE); //Rename temporary to new
+}
+
+/**
+ * This function keeps a detailed track of hits by page and week in a csv file.
+ * @author Adel
+ * @param string $slug
+ * @return void
+ */
+function count_detailed_hits(string $slug)
+{
+    //We need an associative array
+    $columns = array("year" => "0", "week" => "1", "index" => "2", "dpt" => "3", "weather" => "4", "api" => "5", "stats" => "6");
+
+    //Get the current year and week to know where the counter should be updated.
+    $unix = time();
+    $date = date("Y,W", $unix);
+    $date = explode(",", $date);
+    $year = $date[0];
+    $week = $date[1];
+
+    //The naive approach is to rewrite the entire file
+    $input = fopen(DETAILED_STATS_FILE, "r");
+    $output = fopen(STATS_PATH . "tmp3.csv", 'w');
+    $found = false;
+    while ((($data = fgetcsv($input, ",")) !== FALSE)) {
+        //Step 1: Find the right line
+        if (($data[$columns["year"]] == $year) && ($data[$columns["week"]] == $week)) {
+            $found = true;
+            //Make sure the slug is valid first.
+            if (isset($columns[$slug])) {
+                //Prevent access to the first two columns.
+                if (($columns[$slug]) > 1) {
+                    //convert from string to int first
+                    $count = intval($data[$columns[$slug]]);
+                    //increment the counter value and replace the old value
+                    $data[$columns[$slug]] = ++$count;
+                }
+            }
+        }
+        fputcsv($output, $data);
+    }
+    //If not found, append.
+    if (!$found) {
+
+        $data = array($year, $week);
+        for ($i = 2; $i < 7; $i++) {
+            if ($i == $columns[$slug]) {
+                $data[$i] = 1;
+            } else {
+                $data[$i] = 0;
+            }
+        }
+        fputcsv($output, $data);
+    }
+    fclose($input);
+    fclose($output);
+
+    //clean up
+    unlink(DETAILED_STATS_FILE); // Delete obsolete CSV
+    rename(STATS_PATH . "tmp3.csv", DETAILED_STATS_FILE); //Rename temporary to new
 }
