@@ -5,7 +5,9 @@
         <section>
             <h2><?php echo getRegionName() ?></h2>
             <?php
-                displayDptForm();
+                echo "<div class=\"center\">";
+                    displayDptForm();
+                echo "</div>";
                 displayDptMap();
             ?>
         </section>

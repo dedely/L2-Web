@@ -6,7 +6,9 @@ include "include/header.inc.php";
 
 <?php
 displayCity();
+echo "<div class=\"center\">";
 displayCityForm();
+echo"</div>";
 ?>
 
 
