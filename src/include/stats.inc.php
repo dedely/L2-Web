@@ -94,7 +94,6 @@ function getRegionData(): array
             }
         }*/
 
-
         if (isset($regionData[$region])) {
             $regionData[$region] += $count;
         } else {

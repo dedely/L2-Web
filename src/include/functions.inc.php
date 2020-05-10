@@ -225,7 +225,7 @@ function getRegionCode($dptCode)
 }
 /*******NAV********/
 
-function displayButton() : void
+function displayButton(): void
 {
     if (isset($_SERVER['PHP_SELF'])) {
         $currentPage = pathinfo($_SERVER['PHP_SELF'], PATHINFO_BASENAME);
@@ -234,7 +234,7 @@ function displayButton() : void
             if (isset($_GET["dpt"])) {
                 $dptCode = $_GET["dpt"];
                 $proceed = true;
-            } 
+            }
             if ($proceed || isset($_SESSION["dpt"])) {
                 if (empty($dptCode)) {
                     $dptCode = $_SESSION["dpt"];
@@ -299,7 +299,6 @@ function displayCityForm(): void
 {
     $proceed = false;
     if (isset($_GET["dpt"])) {
-
         $dptCode = $_GET["dpt"];
         count_dpt($dptCode);
         register_dpt($dptCode);
@@ -316,9 +315,9 @@ function displayCityForm(): void
         $cities = getCities($dptCode);
 
 
-        echo "<form method=\"GET\" action=\"weather.php\">\n";
+        /* echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
-        echo "\t\t<legend>City dropdown</legend>\n";
+        echo "\t\t<legend>Options</legend>\n";*/
         echo "\t\t<select name=\"city\" id=\"city\" onChange=\"this.form.submit();\">\n";
         echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
 
@@ -330,8 +329,8 @@ function displayCityForm(): void
 
         echo "\t\t</select>\n";
         //echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
-        echo "\t</fieldset>\n";
-        echo "</form>\n";
+        /* echo "\t</fieldset>\n";
+        echo "</form>\n";*/
     }
 }
 
@@ -352,28 +351,43 @@ function displayDptMap(): void
 }
 
 /*********API QUERY******/
+
+function processCity() : bool {
+    $res = processCityForm();
+    if(!$res){
+        $res = processCityCookie();
+    }
+    return $res;
+}
 /**
  * test function
  * @author Adel
- * @return void
+ * @return bool
  */
-function processCityForm(): void
+function processCityForm(): bool
 {
+    $result = false;
     if (isset($_GET["city"])) {
         $city = decode_city($_GET["city"]);
         register_city($city);
         processWeather($city);
-    } elseif (isset($_SESSION["city"]) && isset($_SESSION["weather"])) {
-        if (isInDpt($_SESSION["city"]["code"])) {
-            displayWeather();
-        }
-    } elseif (isset($_COOKIE["city"])) {
+        $result = true;
+    }
+    return $result;
+}
+
+function processCityCookie(): bool
+{
+    $result = false;
+    if (isset($_COOKIE["city"])) {
         $city = decode_city($_COOKIE["city"]);
         if (isInDpt($city["code"])) {
             register_city($city);
             processWeather($city);
+            $result = true;
         }
     }
+    return $result;
 }
 
 /**
@@ -386,7 +400,6 @@ function processWeather(array $city): void
 {
     $weatherData = getWeather($city);
     setSessionWeather($weatherData);
-    displayWeather();
 }
 
 /**
@@ -528,16 +541,16 @@ function queryGeoAPI(string $inseeCode)
 function displayOptions(): void
 {
     if (isset($_SESSION["weather"])) {
-        echo "<form method=\"GET\" action=\"weather.php\">\n";
-        echo "\t<fieldset>\n";
-        echo "\t\t<legend>Options</legend>\n";
+        //echo "<form method=\"GET\" action=\"weather.php\">\n";
+        // echo "\t<fieldset>\n";
+        // echo "\t\t<legend>Options</legend>\n";
         echo "\t\t<label for=\"hourly\">Par heure</label>\n";
         echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
         echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
         //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
-        echo "\t</fieldset>\n";
-        echo "</form>\n";
+        // echo "\t</fieldset>\n";
+        //echo "</form>\n";
     }
 }
 /**
@@ -555,7 +568,6 @@ function displayWeather(string $option = HOURLY): void
     } elseif (isset($_COOKIE["option"])) {
         $option = $_COOKIE["option"];
     }
-    displayOptions();
     if (isset($_SESSION["weather"])) {
         count_option($option);
         switch ($option) {
@@ -614,9 +626,11 @@ function getPopulation($inseeCode)
  */
 function displayPopulation(): void
 {
-    $inseeCode = $_SESSION["city"]["code"];
-    $population = getPopulation($inseeCode);
-    echo "\t\t\t <p>Population: " . $population . "</p>\n";
+    if (isset($_SESSION["city"]["code"])) {
+        $inseeCode = $_SESSION["city"]["code"];
+        $population = getPopulation($inseeCode);
+        echo "\t\t\t <p>Population: " . $population . "</p>\n";
+    }
 }
 
 /******************FORECAST DISPLAY***************/
@@ -678,6 +692,46 @@ function displayHourlyForecast(array $forecast): void
     echo ("\t\t<td>" . $temp . " °C</td>\n");
     echo "\t</tr>\n";
 }
+
+
+function displayNewHourlyForecasts(): void
+{
+    $forecasts = $_SESSION["weather"]["hourly"];
+    echo "<table>\n";
+    echo "\t<thead>\n";
+    echo "\t<tr>\n";
+    echo "\t\t<th>Heure</th>\n";
+    echo "\t\t<th>Description</th>\n";
+    echo "\t\t<th>Température</th>\n";
+    echo "\t</tr>\n";
+    echo "\t</thead>\n";
+    echo "\t<tbody>\n";
+
+    foreach ($forecasts as $key => $forecast) {
+        displayNewHourlyForecast($forecast);
+    }
+
+    echo "\t</tbody>\n";
+    echo "</table>\n";
+}
+
+function displayNewHourlyForecast(array $forecast): void
+{
+
+    $time = convertTime($forecast["dt"]);
+    $temp = $forecast["temp"];
+    $weather = $forecast["weather"][0];
+    $description = $weather["description"];
+    $icon = $weather["icon"];
+
+    echo "\t<tr>\n";
+    echo "\t\t<td>" . $time . "</td>\n";
+    echo ("\t\t<td>" . displayWeatherIllustration($icon) . " " . $description . "</td>\n");
+    echo ("\t\t<td>" . $temp . " °C</td>\n");
+    echo "\t</tr>\n";
+}
+
+
 /**
  * This function displays the weather forecast of the next 7 days.
  * @author Adel

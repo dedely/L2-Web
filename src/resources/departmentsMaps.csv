@@ -1,7 +1,7 @@
-﻿code,dptPathname,regionOverviewPathname
+code,dptPathname,regionOverviewPathname
 11,./maps/ileDeFrance.map,./images/regionsMapsOverviews/france-ileDeFrance.svg
 24,./maps/centreValDeLoire.map,./images/regionsMapsOverviews/france-centreValDeLoire.svg
-27,./maps/bourgogneFrancheComte.map,./images/regionsMapsOverviews/France-bourgogneFrancheComte.svg
+27,./maps/bourgogneFrancheComte.map,./images/regionsMapsOverviews/france-bourgogneFrancheComte.svg
 28,./maps/normandie.map,./images/regionsMapsOverviews/france-normandie.svg
 32,./maps/hautsDeFrance.map,./images/regionsMapsOverviews/france-hautsDeFrance.svg
 44,./maps/grandEst.map,./images/regionsMapsOverviews/france-grandEst.svg
