@@ -2,7 +2,7 @@
     include "include/functions.inc.php";
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
     <head>
         <title><?php echo $title ?></title>
@@ -25,23 +25,9 @@
             <nav>
                 <ul id="nav">
                     <li><a href="./index.php">Accueil</a></li>
-                    <?php
-                        if (isset($_SERVER['PHP_SELF']))
-                        {
-                            $currentPage = pathinfo($_SERVER['PHP_SELF'], PATHINFO_BASENAME);
-                            if($currentPage == "weather.php")
-                            {
-                                if (isset($_GET["dpt"]))
-                                {
-                                    $dptCode=$_GET["dpt"];
-                                    $regionCode=getRegionCode($dptCode);
-                                    echo"<li><a href=\"./dpt.php?region=$regionCode\">Départements</a></li>";
-                                }
-                            }
-                        }
-                    ?>
-                    <li><a href="./comingsoon.php">Statistiques</a></li>
+                    <?php displayButton();?>
+                    <li><a href="./stats.php">Statistiques</a></li>
                 </ul>
             </nav>
         </header>
-        
+        <?php count_hits() ?>
