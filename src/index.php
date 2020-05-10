@@ -19,7 +19,7 @@ count_detailed_hits("index");
             <h2>Bienvenue!</h2>
             <h3>Sélectionnez votre région!</h3>
             <?php
-                require "./maps/france.map";
+                require_once "./maps/france.map";
             ?>
         </section>
 

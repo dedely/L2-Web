@@ -5,6 +5,7 @@
 ?>
         <section>
             <h2><?php echo getRegionName() ?></h2>
+            <p>Sélectionnez un départment dans la liste on en cliquant sur la carte de votre région.</p>
             <?php
                 echo "<div class=\"center\">";
                     displayDptForm();
