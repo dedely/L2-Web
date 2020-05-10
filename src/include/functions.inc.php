@@ -352,9 +352,10 @@ function displayDptMap(): void
 
 /*********API QUERY******/
 
-function processCity() : bool {
+function processCity(): bool
+{
     $res = processCityForm();
-    if(!$res){
+    if (!$res) {
         $res = processCityCookie();
     }
     return $res;
@@ -800,10 +801,16 @@ function convertTime(string $dt): string
  */
 function getDay(string $dt): string
 {
-    $frDays = array("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche");
+    $frDays = array("Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi");
     $date = getdate($dt);
     $wday = $date["wday"];
-    return $frDays[$wday];
+    $mday = $date["mday"];
+    if ($mday == date("j")) {
+        $result = "Aujourd'hui";
+    } else {
+        $result = $frDays[$wday] . " " . $mday;
+    }
+    return $result;
 }
 
 /***************************STATS*****************************/
