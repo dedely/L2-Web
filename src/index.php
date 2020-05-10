@@ -1,5 +1,5 @@
 <?php
-$title = "Weather forecast app";
+$title = "Météo";
 include "include/header.inc.php";
 count_detailed_hits("index");
 ?>

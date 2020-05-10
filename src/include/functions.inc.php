@@ -223,6 +223,28 @@ function getRegionCode($dptCode)
     fclose($handle);
     return $regionCode;
 }
+/*******NAV********/
+
+function displayButton() : void
+{
+    if (isset($_SERVER['PHP_SELF'])) {
+        $currentPage = pathinfo($_SERVER['PHP_SELF'], PATHINFO_BASENAME);
+        if ($currentPage == "weather.php") {
+            $proceed = false;
+            if (isset($_GET["dpt"])) {
+                $dptCode = $_GET["dpt"];
+                $proceed = true;
+            } 
+            if ($proceed || isset($_SESSION["dpt"])) {
+                if (empty($dptCode)) {
+                    $dptCode = $_SESSION["dpt"];
+                }
+                $regionCode = getRegionCode($dptCode);
+                echo "<li><a href=\"./dpt.php?region=$regionCode\">Départements</a></li>";
+            }
+        }
+    }
+}
 
 /*******DROPDOWN FORMS********/
 /**
@@ -243,7 +265,7 @@ function displayDptForm(): void
         echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
         echo "\t\t<legend>dpt dropdown</legend>\n";
-        echo "\t\t<select name=\"dpt\" id=\"dpt\">\n";
+        echo "\t\t<select name=\"dpt\" id=\"dpt\" onChange=\"this.form.submit();\">\n";
         echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionner un département</option>\n";
 
         for ($i = 0; $i < count($departments); $i++) {
@@ -251,7 +273,7 @@ function displayDptForm(): void
         }
 
         echo "\t\t</select>\n";
-       // echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        // echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
     }
@@ -297,7 +319,7 @@ function displayCityForm(): void
         echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
         echo "\t\t<legend>City dropdown</legend>\n";
-        echo "\t\t<select name=\"city\" id=\"city\">\n";
+        echo "\t\t<select name=\"city\" id=\"city\" onChange=\"this.form.submit();\">\n";
         echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
 
         for ($i = 0; $i < count($cities); $i++) {
@@ -510,9 +532,9 @@ function displayOptions(): void
         echo "\t<fieldset>\n";
         echo "\t\t<legend>Options</legend>\n";
         echo "\t\t<label for=\"hourly\">Par heure</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\"/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\"/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
         //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
