@@ -546,13 +546,24 @@ function displayOptions(): void
         // echo "\t<fieldset>\n";
         // echo "\t\t<legend>Options</legend>\n";
         echo "\t\t<label for=\"hourly\">Par heure</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\" onChange=\"this.form.submit();\" ". isChecked("hourly") ."/>\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\"/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\" ". isChecked("daily"). "/>\n";
         //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         // echo "\t</fieldset>\n";
         //echo "</form>\n";
     }
+}
+
+function isChecked($buttonName)
+{
+    $tmp = "";
+    if (isset($_GET["option"])) {
+        if(strcmp($_GET["option"], $buttonName) == 0){
+            $tmp = "checked";
+        }
+    }
+    return $tmp;
 }
 /**
  * This function is used to call the appropriate display function depending on which option was selected.
