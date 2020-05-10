@@ -194,6 +194,36 @@ function getRegionName(): string
     }
 }
 
+function getRegionCode($dptCode)
+{
+    $dptData = "./resources/departments.csv";
+    $handle = fopen($dptData, "r");
+
+    //Change the following variables if changes are made in the csv file.
+    $REGION_CODE = 0;
+    $DPT_CODE = 1;
+
+    //We call fgets once to skip the first line of our csv as it doesn't contain relevant information.
+    fgets($handle);
+    $stop = false;
+    $state = 0;
+    while ((($data = fgetcsv($handle, 1000, ",")) !== FALSE) && !$stop) {
+        if (($state == 0) && ($data[$DPT_CODE] == $dptCode)) {
+            $state = 1;
+        }
+        if ($state == 1) {
+            //We stop once we found all the information about a given dpt.
+            if ($data[$DPT_CODE] != $dptCode) {
+                $stop = true;
+            } else {
+                $regionCode = $data[$REGION_CODE];
+            }
+        }
+    }
+    fclose($handle);
+    return $regionCode;
+}
+
 /*******DROPDOWN FORMS********/
 /**
  * This function displays a dropdown form of the departments in a region using the regionCode in the $_GET superglobal array.
@@ -221,7 +251,7 @@ function displayDptForm(): void
         }
 
         echo "\t\t</select>\n";
-        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+       // echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
     }
@@ -277,7 +307,7 @@ function displayCityForm(): void
         }
 
         echo "\t\t</select>\n";
-        echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        //echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
     }
@@ -483,7 +513,7 @@ function displayOptions(): void
         echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\"/>\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
         echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\"/>\n";
-        echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
+        //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         echo "\t</fieldset>\n";
         echo "</form>\n";
     }

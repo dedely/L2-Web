@@ -11,7 +11,9 @@ count_detailed_hits("weather");
 <section>
     <h2><?php echo getCityName() ?></h2>
     <?php
+    echo "<div class=\"center\">";
     displayCityForm();
+    echo "</div>\n";
     processCityForm();
     ?>
 </section>
