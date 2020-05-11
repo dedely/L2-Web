@@ -641,11 +641,25 @@ function displayPopulation(): void
     if (isset($_SESSION["city"]["code"])) {
         $inseeCode = $_SESSION["city"]["code"];
         $population = getPopulation($inseeCode);
-        echo "\t\t\t <p>Population: " . $population . "</p>\n";
+        echo "\t\t\t <p>La population de " . getCityName(). " est de ". $population . " habitants.</p>\n";
     }
 }
 
+function displayGeneralInfo(): void{
+    displayPopulation();
+    displaySun();
+}
+
 /******************FORECAST DISPLAY***************/
+
+
+function displaySun(): void {
+    if(isset($_SESSION["weather"])){
+        $sunrise = date("H h i",$_SESSION["weather"]["current"]["sunrise"]);
+        $sunset = date("H h i", $_SESSION["weather"]["current"]["sunset"]);
+        echo "<p> </p>\n";
+    }
+}
 
 /**
  * @author Adel
