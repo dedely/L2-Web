@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/dptMaps/hautsDeFrance.png" width="649" height="720" border="0" usemap="#map" />
+    <img src="./images/dptMaps/hautsDeFrance.png" alt="Hauts-de-France" width="649" height="720" usemap="#map" />
 </div>
 
 <map name="map">

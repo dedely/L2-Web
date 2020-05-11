@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/france.svg" width="625" height="601" border="0" usemap="#map" />
+    <img src="./images/france.svg" alt="France" width="625" height="601" usemap="#map" />
 </div>
 
 <map name="map">

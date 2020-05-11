@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/dptMaps/bourgogneFrancheComte.png" width="600" height="458" border="0" usemap="#map" />
+    <img src="./images/dptMaps/bourgogneFrancheComte.png" alt="Bourgogne Franche Comté" width="600" height="458" usemap="#map" />
 </div>
 
 <map name="map">

@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/dptMaps/nouvelleAquitaine.png" width="480" height="676" border="0" usemap="#map" />
+    <img src="./images/dptMaps/nouvelleAquitaine.png" alt="Nouvelle Aquitaine" width="480" height="676" usemap="#map" />
 </div>
 
 <map name="map">

@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="./images/dptMaps/auvergne_rhoneAlpes.png" width="765" height="600" border="0" usemap="#map" />
+    <img src="./images/dptMaps/auvergne_rhoneAlpes.png" alt="Auvergne Rhône Alpes" width="765" height="600" usemap="#map" />
 </div>
 
 <map name="map">
