@@ -757,51 +757,9 @@ function displayNewHourlyForecasts(): void
         displayNewHourlyForecast($forecast);
     }
     echo "\t</tr>\n";
-    /* for ($i=0; $i <= $col; $i++) { 
-            $time = convertTime($forecasts[($j*$col)+$i]["dt"]);
-            echo "\t\t<th>" . $time . "</th>\n";
-        }
-
-        echo "\t</tr>\n";
-        echo "\t</thead>\n";
-        echo "\t<tbody>\n";
-
-        echo "\t<tr>\n";
-        for ($i=0; $i <= $col; $i++) { 
-            $forecast = $forecasts[($j*$col)+$i];
-            $temp = $forecast["temp"];
-            echo "\t\t<td>";
-            echo $temp . " °C ";
-            echo "\t\t</td>";
-        }
-        echo "\t</tr>\n";
-
-        echo "\t<tr>\n";
-        for ($i=0; $i <= $col; $i++) { 
-            $forecast = $forecasts[($j*$col)+$i];
-            $weather = $forecast["weather"][0];
-            $icon = $weather["icon"];
-            $description = $weather["description"];
-            echo "\t\t<td>";
-            echo displayWeatherIllustration($icon) ."\n";
-            echo $description;
-            echo "\t\t</td>";
-        }
-        echo "\t</tr>\n";*/
-    /* echo "\t<tr>\n";
-        for ($i=0; $i <= $col; $i++) { 
-            $forecast = $forecasts[($j*$col)+$i];
-            $weather = $forecast["weather"][0];
-            $description = $weather["description"];
-            echo "\t\t<td>";
-            echo $description;
-            echo "\t\t</td>";
-        }
-        echo "\t</tr>\n";*/
-
     echo "\t</tbody>\n";
     echo "</table>\n";
-   echo "</div>\n";
+    echo "</div>\n";
 }
 
 function displayNewHourlyForecast(array $forecast): void
