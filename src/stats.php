@@ -6,12 +6,14 @@ count_detailed_hits("stats");
 
 <section>
     <h2>Statistiques générales</h2>
-    <div class=center>
-        <p>Nombre de hits : <?php echo count_hits() ?></p>
+    <div class="center">
+        Nombre de hits : <?php echo count_hits() ?>
+    </div>
+    <div class="center">
         <?php 
-        echo "<img src=\"stats/region_chart.php\" alt=\"test\"/>\n";
         echo "<img src=\"stats/option_chart.php\" alt=\"test\"/>\n";
         echo "<img src=\"stats/hits_chart.php\" alt=\"test\"/>\n";
+        echo "<img src=\"stats/region_chart.php\" alt=\"test\"/>\n";
         ?>
     </div>
 </section>
