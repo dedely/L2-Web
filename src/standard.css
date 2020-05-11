@@ -136,6 +136,10 @@ p {
   margin-left: 0.5cm;
 }
 
+p.center{
+  text-align: center;
+}
+
 div.center {
   text-align: center;
 }
