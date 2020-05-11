@@ -240,7 +240,7 @@ function displayButton(): void
                     $dptCode = $_SESSION["dpt"];
                 }
                 $regionCode = getRegionCode($dptCode);
-                echo "<li><a href=\"./dpt.php?region=$regionCode\">Départements</a></li>";
+                echo "<li><a href=\"./dpt.php?region=$regionCode\">Départements</a></li>\n";
             }
         }
     }
@@ -318,16 +318,16 @@ function displayCityForm(): void
         /* echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
         echo "\t\t<legend>Options</legend>\n";*/
-        echo "\t\t<select name=\"city\" id=\"city\" onChange=\"this.form.submit();\">\n";
-        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
+        echo "<select name=\"city\" id=\"city\" onChange=\"this.form.submit();\">\n";
+        echo "\t\t\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
 
         for ($i = 0; $i < count($cities); $i++) {
             $city = $cities[$i];
             $encodedValue  = http_build_query($city, "", SEPARATOR);
-            echo "\t\t\t<option value=\"" . $encodedValue . "\">" . $city["name"] . "</option>\n";
+            echo "\t\t\t\t\t<option value=\"" . $encodedValue . "\">" . $city["name"] . "</option>\n";
         }
 
-        echo "\t\t</select>\n";
+        echo "\t\t\t\t\t</select>\n";
         //echo "\t\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         /* echo "\t</fieldset>\n";
         echo "</form>\n";*/
@@ -351,7 +351,11 @@ function displayDptMap(): void
 }
 
 /*********API QUERY******/
-
+/**
+ * This function does all the preliminary work to display the weather forecast for a given city.
+ * @author Adel
+ * @return boolean returns false if the weather shouldn't be displayed.
+ */
 function processCity(): bool
 {
     $res = processCityForm();
@@ -361,7 +365,7 @@ function processCity(): bool
     return $res;
 }
 /**
- * test function
+ * This function processes the city form.
  * @author Adel
  * @return bool
  */
@@ -376,7 +380,12 @@ function processCityForm(): bool
     }
     return $result;
 }
-
+/**
+ * This function processes the city cookie to take the appropriate action:
+ * Only display weather information about the city if it's in the current department.
+ * @author Adel
+ * @return bool
+ */
 function processCityCookie(): bool
 {
     $result = false;
@@ -392,7 +401,7 @@ function processCityCookie(): bool
 }
 
 /**
- * Undocumented function
+ * This function gets the weather data and stores it into the $_SESSION array.
  * @author Adel
  * @param array $city
  * @return void
@@ -404,7 +413,7 @@ function processWeather(array $city): void
 }
 
 /**
- * Undocumented function
+ * This functions returns weather information as an associative array.
  * @author Adel
  * @param array $city
  * @return array
@@ -418,7 +427,7 @@ function getWeather(array $city): array
 }
 
 /**
- * Undocumented function
+ * This function registers the current weather information in a session.
  * @author Adel
  * @param array $weatherData
  * @return void
@@ -430,7 +439,7 @@ function setSessionWeather(array $weatherData): void
 }
 
 /**
- * Undocumented function
+ * This function registers the current city informations in a session.
  * @author Adel
  * @param array $city
  * @return void
@@ -440,7 +449,12 @@ function register_city(array $city): void
     unset($_SESSION["city"]);
     $_SESSION["city"] = $city;
 }
-
+/**
+ * This function registers the current department code in a session.
+ * @author Adel
+ * @param string $dptCode
+ * @return void
+ */
 function register_dpt(string $dptCode): void
 {
     unset($_SESSION["dpt"]);
@@ -448,7 +462,7 @@ function register_dpt(string $dptCode): void
 }
 
 /**
- * Undocumented function
+ * This function decodes the string provided by the city dropdown form.
  * @author Adel
  * @param string $encodedValue
  * @return array
@@ -460,7 +474,7 @@ function decode_city(string $encodedValue): array
 }
 
 /**
- * Undocumented function
+ * This function checks if a city is in the current department.
  * @author Adel
  * @param string $zip
  * @return boolean
@@ -546,9 +560,9 @@ function displayOptions(): void
         // echo "\t<fieldset>\n";
         // echo "\t\t<legend>Options</legend>\n";
         echo "\t\t<label for=\"hourly\">Par heure</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourrly\" size=\"10\" onChange=\"this.form.submit();\" ". isChecked("hourly") ."/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourly\" size=\"10\" onChange=\"this.form.submit();\" " . isChecked("hourly") . "/>\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\" ". isChecked("daily"). "/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\" " . isChecked("daily") . "/>\n";
         //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         // echo "\t</fieldset>\n";
         //echo "</form>\n";
@@ -559,7 +573,7 @@ function isChecked($buttonName)
 {
     $tmp = "";
     if (isset($_GET["option"])) {
-        if(strcmp($_GET["option"], $buttonName) == 0){
+        if (strcmp($_GET["option"], $buttonName) == 0) {
             $tmp = "checked";
         }
     }
@@ -574,7 +588,7 @@ function isChecked($buttonName)
  */
 function displayWeather(string $option = HOURLY): void
 {
-    displayPopulation();
+    displayGeneralInfo();
     if (isset($_GET["option"])) {
         $option = $_GET["option"];
     } elseif (isset($_COOKIE["option"])) {
@@ -584,13 +598,13 @@ function displayWeather(string $option = HOURLY): void
         count_option($option);
         switch ($option) {
             case HOURLY:
-                displayHourlyForecasts();
+                displayNewHourlyForecasts();
                 break;
             case DAILY:
                 displayDailyForecasts();
                 break;
             default:
-                # code...
+                # nothing happens...
                 break;
         }
     }
@@ -641,11 +655,27 @@ function displayPopulation(): void
     if (isset($_SESSION["city"]["code"])) {
         $inseeCode = $_SESSION["city"]["code"];
         $population = getPopulation($inseeCode);
-        echo "\t\t\t <p>Population: " . $population . "</p>\n";
+        echo "\t\t\t<p class=\"center\">La population de " . getCityName() . " est de " . $population . " habitants.</p>\n";
     }
 }
 
+function displayGeneralInfo(): void
+{
+    displayPopulation();
+    displaySun();
+}
+
 /******************FORECAST DISPLAY***************/
+
+
+function displaySun(): void
+{
+    if (isset($_SESSION["weather"])) {
+        $sunrise = date("H \h i", $_SESSION["weather"]["current"]["sunrise"]);
+        $sunset = date("H \h i", $_SESSION["weather"]["current"]["sunset"]);
+        echo "\t\t\t<p class=\"center\"><img src=\"http://openweathermap.org/img/wn/01d.png\" alt=\"Lever\"/>: " . $sunrise . ", <img src=\"http://openweathermap.org/img/wn/01n.png\" alt=\"Coucher\"/>: " . $sunset . "</p>\n";
+    }
+}
 
 /**
  * @author Adel
@@ -709,38 +739,38 @@ function displayHourlyForecast(array $forecast): void
 function displayNewHourlyForecasts(): void
 {
     $forecasts = $_SESSION["weather"]["hourly"];
+    echo "<div class=\"scroll\">\n";
     echo "<table>\n";
     echo "\t<thead>\n";
     echo "\t<tr>\n";
-    echo "\t\t<th>Heure</th>\n";
-    echo "\t\t<th>Description</th>\n";
-    echo "\t\t<th>Température</th>\n";
+
+    foreach ($forecasts as $key => $forecast) {
+        $time = convertTime($forecast["dt"]);
+        echo "\t\t<th>" . $time . "</th>\n";
+    }
     echo "\t</tr>\n";
     echo "\t</thead>\n";
     echo "\t<tbody>\n";
 
+    echo "\t<tr>\n";
     foreach ($forecasts as $key => $forecast) {
         displayNewHourlyForecast($forecast);
     }
-
+    echo "\t</tr>\n";
     echo "\t</tbody>\n";
     echo "</table>\n";
+    echo "</div>\n";
 }
 
 function displayNewHourlyForecast(array $forecast): void
 {
 
-    $time = convertTime($forecast["dt"]);
     $temp = $forecast["temp"];
     $weather = $forecast["weather"][0];
     $description = $weather["description"];
     $icon = $weather["icon"];
 
-    echo "\t<tr>\n";
-    echo "\t\t<td>" . $time . "</td>\n";
-    echo ("\t\t<td>" . displayWeatherIllustration($icon) . " " . $description . "</td>\n");
-    echo ("\t\t<td>" . $temp . " °C</td>\n");
-    echo "\t</tr>\n";
+    echo "\t\t<td>" . $temp . " °C " . displayWeatherIllustration($icon) . " " . $description . "</td>\n";
 }
 
 
@@ -801,7 +831,7 @@ function displayDailyForecast(array $forecast): void
  */
 function convertTime(string $dt): string
 {
-    return date("H \h i", $dt);
+    return date("d\/ m H \h", $dt);
 }
 
 /**
