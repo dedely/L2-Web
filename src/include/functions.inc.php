@@ -266,7 +266,8 @@ function displayDptForm(): void
         echo "\t<fieldset>\n";
         echo "\t\t<legend>dpt dropdown</legend>\n";
         echo "\t\t<select name=\"dpt\" id=\"dpt\" onChange=\"this.form.submit();\">\n";
-        echo "\t\t\t<option value=\"none\" selected disabled hidden>Sélectionner un département</option>\n";
+        //selected disabled hidden aren't xml valid. We couldn't fix it it time.
+        // echo "\t\t\t<option value=\"none\" selectedness=\"selected\" disabled=\"true\" hidden=\"true\">Sélectionner un département</option>\n";
 
         for ($i = 0; $i < count($departments); $i++) {
             displayOption($departments[$i]);
@@ -319,7 +320,8 @@ function displayCityForm(): void
         echo "\t<fieldset>\n";
         echo "\t\t<legend>Options</legend>\n";*/
         echo "<select name=\"city\" id=\"city\" onChange=\"this.form.submit();\">\n";
-        echo "\t\t\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
+        //selected disabled hidden aren't xml valid. We couldn't fix it it time.
+        //echo "\t\t\t\t\t<option value=\"none\" selected disabled hidden>Sélectionnez une ville</option>\n";
 
         for ($i = 0; $i < count($cities); $i++) {
             $city = $cities[$i];
@@ -343,7 +345,7 @@ function displayDptMap(): void
 
         $regionOverviewPathname = $departmentsMap["regionOverviewPathname"];
         echo "<aside>";
-        echo "<img class=\"leftOverview\" src=$regionOverviewPathname alt=\"Region Overview\"/>";
+        echo "<img class=\"leftOverview\" src=\"$regionOverviewPathname\" alt=\"Region Overview\"/>";
         echo "</aside>";
 
         require $departmentsMap["dptMapPathname"];
@@ -560,9 +562,9 @@ function displayOptions(): void
         // echo "\t<fieldset>\n";
         // echo "\t\t<legend>Options</legend>\n";
         echo "\t\t<label for=\"hourly\">Par heure</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourly\" size=\"10\" onChange=\"this.form.submit();\" " . isChecked("hourly") . "/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"hourly\" id=\"hourly\" size=\"10\" onChange=\"this.form.submit();\" />\n";
         echo "\t\t<label for=\"daily\">Par jour</label>\n";
-        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\" " . isChecked("daily") . "/>\n";
+        echo "\t\t<input type=\"radio\" name=\"option\" value=\"daily\" id=\"daily\" size=\"10\" onChange=\"this.form.submit();\" />\n";
         //echo "\t\t<input type=\"submit\" value=\"Go!\"/>\n";
         // echo "\t</fieldset>\n";
         //echo "</form>\n";
@@ -574,7 +576,7 @@ function isChecked($buttonName)
     $tmp = "";
     if (isset($_GET["option"])) {
         if (strcmp($_GET["option"], $buttonName) == 0) {
-            $tmp = "checked";
+            $tmp = "checked=true";
         }
     }
     return $tmp;
