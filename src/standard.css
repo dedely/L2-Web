@@ -94,6 +94,10 @@ p {
   margin-left: 0.5cm;
 }
 
+p.center {
+  text-align: center;
+}
+
 div.center {
   text-align: center;
 }
@@ -156,17 +160,32 @@ a.returnLink {
   font-weight: bold;
 }
 
-table {
+div.scroll {
+  text-align: center;
+  overflow-x: scroll;
+  width: 1080px;
   margin: 0 auto;
 }
 
+table {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: scroll;
+}
+
 ​ th, td {
+  border-style: none solid;
   border: 1px solid black;
+  height: 100px;
+  vertical-align: middle;
   text-align: center;
 }
 
 th {
   background-color: #3eb7b0;
+  vertical-align: middle;
+  text-align: center;
 }
 
 legend {
