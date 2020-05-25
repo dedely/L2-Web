@@ -16,7 +16,8 @@ foreach ($tmp as $key => $value) {
    //Ignore null values as they wouldn't be relevant in the pie plot.
     if ($value["count"] > 0) {
         $data[] = $value["count"];
-        $legends[] = $value["option"];
+        $option = ($value["option"] == "hourly") ? "Par heure" : "Par jour";
+        $legends[] = $option;
     }
 }
 

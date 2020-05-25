@@ -59,6 +59,7 @@ html, body {
 body {
   font-family: Georgia, serif;
   font-size: 100%;
+  display: table;
 }
 
 h1 {
@@ -138,8 +139,9 @@ div.inline {
 }
 
 footer {
-  margin-top: 0.5cm;
+  height: 230px;
   background-color: grey;
+  display: table-row;
 }
 
 p.footer {

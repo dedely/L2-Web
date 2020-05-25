@@ -264,7 +264,7 @@ function displayDptForm(): void
 
         echo "<form method=\"GET\" action=\"weather.php\">\n";
         echo "\t<fieldset>\n";
-        echo "\t\t<legend>dpt dropdown</legend>\n";
+        echo "\t\t<legend>Sélection</legend>\n";
         echo "\t\t<select name=\"dpt\" id=\"dpt\" onChange=\"this.form.submit();\">\n";
         echo "\t\t\t<option value=\"none\" selected=\"selected\" disabled=\"disabled\" hidden=\"hidden\">Sélectionner un département</option>\n";
 
